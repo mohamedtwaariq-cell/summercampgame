@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taiwan Summer Adventure!</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  /* ── WELCOME ── */
+  #screen-welcome {
+    background: linear-gradient(160deg, #0f3443 0%, #34e89e 100%);
+    text-align: center;
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+  .welcome-title {
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    line-height: 1.1;
+  }
+  .welcome-subtitle {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: rgba(255,255,255,0.9);
+    max-width: 600px;
+  }
+  .welcome-animals { font-size: 4rem; letter-spacing: 0.5rem; }
+  .btn-start {
+    padding: 1.2rem 3rem;
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: #FFD700;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255,215,0,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-top: 1rem;
+  }
+  .btn-start:hover { transform: scale(1.07); box-shadow: 0 12px 40px rgba(255,215,0,0.6); }
+  .btn-start:active { transform: scale(0.97); }
+
+  .star-display {
+    display: flex; gap: 0.5rem; align-items: center;
+    background: rgba(255,255,255,0.15);
+    border-radius: 30px;
+    padding: 0.5rem 1.2rem;
+    color: #FFD700;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  /* ── MAP ── */
+  #screen-map {
+    background: linear-gradient(180deg, #87CEEB 0%, #98FB98 60%, #228B22 100%);
+    padding: 1.5rem;
+    gap: 1.5rem;
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+  .map-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900;
+    color: #1a1a2e;
+    text-align: center;
+  }
+  .map-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    width: 100%;
+    max-width: 900px;
+  }
+  .location-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .location-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+  .location-card.completed { border-color: #FFD700; }
+  .location-card.completed::after {
+    content: '✅';
+    position: absolute;
+    top: 12px; right: 12px;
+    font-size: 1.5rem;
+  }
+  .loc-icon { font-size: 3.5rem; }
+  .loc-name { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; margin: 0.5rem 0 0.2rem; }
+  .loc-theme { font-size: 0.95rem; color: #666; }
+  .loc-animal { font-size: 2rem; position: absolute; bottom: 12px; right: 16px; }
+  .loc-stars { font-size: 0.9rem; color: #FFB800; margin-top: 0.3rem; font-weight: 600; }
+
+  /* ── LOCATION ── */
+  #screen-location {
+    background: #f0f4ff;
+    padding: 0;
+    justify-content: flex-start;
+    overflow-y: auto;
+    min-height: 100vh;
+  }
+  .loc-header {
+    width: 100%;
+    padding: 1.5rem 1.5rem 1rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .loc-header h2 { font-size: 1.8rem; font-weight: 900; flex: 1; }
+  .back-btn {
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.5);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.4); }
+
+  .animal-intro {
+    background: rgba(255,255,255,0.9);
+    margin: 0 1rem 1rem;
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .animal-big { font-size: 4rem; }
+  .animal-info h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; }
+  .animal-info p { font-size: 0.9rem; color: #555; margin-top: 0.2rem; }
+
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1rem 1rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .tab {
+    flex: 1;
+    padding: 0.7rem 0.5rem;
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #888;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tab.active {
+    background: #1a1a2e;
+    color: #fff;
+    border-color: #1a1a2e;
+  }
+
+  .tab-content { display: none; width: 100%; max-width: 900px; margin: 0 auto; padding: 0 1rem 2rem; }
+  .tab-content.active { display: block; }
+
+  /* VOCAB */
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .vocab-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+    border: 2px solid #eee;
+    perspective: 600px;
+  }
+  .vocab-card:hover { transform: scale(1.05); }
+  .vocab-card.flipped .card-front { display: none; }
+  .vocab-card.flipped .card-back { display: block; }
+  .card-front, .card-back { transition: all 0.3s; }
+  .card-back { display: none; }
+  .vocab-emoji { font-size: 3.5rem; margin-bottom: 0.5rem; }
+  .vocab-word { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; }
+  .vocab-tip { font-size: 0.85rem; color: #666; margin-top: 0.3rem; }
+
+  /* QUIZ */
+  .quiz-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .quiz-progress {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .quiz-question {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .quiz-emoji { font-size: 5rem; text-align: center; margin: 1rem 0; }
+  .quiz-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+  .choice-btn {
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 14px;
+    border: 3px solid #e0e0e0;
+    background: #f8f8f8;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #1a1a2e;
+  }
+  .choice-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #4a90e2; transform: scale(1.03); }
+  .choice-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+  .choice-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+  .quiz-feedback {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-top: 1rem;
+    min-height: 2rem;
+  }
+  .quiz-feedback.good { color: #28a745; }
+  .quiz-feedback.bad { color: #dc3545; }
+  .next-btn {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    background: #FFD700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .next-btn:hover { transform: scale(1.03); }
+
+  .quiz-result {
+    text-align: center;
+    padding: 2rem;
+  }
+  .result-stars { font-size: 3rem; margin: 0.5rem 0; }
+  .result-msg { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; }
+  .result-sub { font-size: 1rem; color: #666; margin-top: 0.5rem; }
+
+  /* CHAT */
+  .chat-box {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+  }
+  .chat-header {
+    padding: 1rem 1.2rem;
+    background: #1a1a2e;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background: #f5f5f5;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 0.8rem 1rem;
+    border-radius: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+  .msg.bao { background: #e8f5e9; border-bottom-left-radius: 4px; align-self: flex-start; color: #1a1a2e; }
+  .msg.user { background: #1a1a2e; color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .msg.typing { background: #e8f5e9; color: #888; font-style: italic; align-self: flex-start; }
+  .chat-input-row {
+    display: flex;
+    padding: 0.8rem;
+    gap: 0.5rem;
+    background: #fff;
+    border-top: 1px solid #eee;
+  }
+  .chat-input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border-radius: 20px;
+    border: 2px solid #ddd;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: #4a90e2; }
+  .chat-send {
+    padding: 0.7rem 1.2rem;
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+  .chat-send:hover { background: #357abd; }
+  .chat-send:disabled { background: #aaa; cursor: not-allowed; }
+
+  .quick-prompts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #fff;
+  }
+  .quick-btn {
+    padding: 0.4rem 0.9rem;
+    background: #e8f0fe;
+    border: 1px solid #4a90e2;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    color: #1a73e8;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+  .quick-btn:hover { background: #c8d8f8; }
+
+  /* ── VICTORY ── */
+  #screen-victory {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    text-align: center;
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+  .victory-title { font-size: clamp(2rem,6vw,4rem); font-weight: 900; color: #fff; }
+  .victory-stars { font-size: 3rem; }
+  .victory-msg { font-size: 1.3rem; color: rgba(255,255,255,0.9); max-width: 500px; }
+
+  /* ── UTILS ── */
+  .hidden { display: none !important; }
+  .bounce { animation: bounce 0.5s ease; }
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+  @media (max-width: 480px) {
+    .quiz-choices { grid-template-columns: 1fr; }
+    .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+    .map-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ WELCOME ═══════════════════════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-animals">🐒🦆🦚🐈🐻</div>
+  <h1 class="welcome-title">Taiwan Summer<br>Adventure!</h1>
+  <p class="welcome-subtitle">
+    Travel around Taiwan, meet amazing animals,<br>
+    and learn English along the way! 🇹🇼
+  </p>
+  <div class="star-display">⭐ <span id="total-stars-welcome">0</span> / 30 Stars Collected</div>
+  <button class="btn-start" onclick="showMap()">🚀 Start Adventure!</button>
+  <p style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-top:0.5rem;">
+    Powered by Bao Bao the AI Bear 🐻
+  </p>
+</div>
+
+<!-- ═══════════════════════════ MAP ═══════════════════════════ -->
+<div id="screen-map" class="screen">
+  <h1 class="map-title">🗺️ Choose Your Adventure!</h1>
+  <div class="star-display" style="background:rgba(0,0,0,0.15)">
+    ⭐ <span id="total-stars-map">0</span> / 30 Stars
+  </div>
+  <div class="map-grid" id="map-grid"></div>
+  <button class="back-btn" style="background:rgba(0,0,0,0.15); border-color:rgba(0,0,0,0.3); color:#1a1a2e; margin-top:0.5rem;" onclick="showScreen('screen-welcome')">
+    ← Back to Start
+  </button>
+</div>
+
+<!-- ═══════════════════════════ LOCATION ═══════════════════════════ -->
+<div id="screen-location" class="screen">
+  <div class="loc-header" id="loc-header">
+    <button class="back-btn" onclick="showMap()">← Map</button>
+    <h2 id="loc-title"></h2>
+    <div class="star-display" style="background:rgba(255,255,255,0.25)">
+      ⭐ <span id="loc-stars-display">0</span>
+    </div>
+  </div>
+
+  <div style="width:100%; max-width:900px; margin:0 auto; padding:0 1rem;">
+    <div class="animal-intro" id="animal-intro">
+      <div class="animal-big" id="animal-emoji"></div>
+      <div class="animal-info">
+        <h3 id="animal-name"></h3>
+        <p id="animal-fact"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs" style="max-width:900px; margin:0 auto;">
+    <div class="tab active" id="tab-vocab" onclick="showTab('vocab')">📚 Words</div>
+    <div class="tab" id="tab-quiz" onclick="showTab('quiz')">🎯 Quiz</div>
+    <div class="tab" id="tab-chat" onclick="showTab('chat')">💬 Bao Bao</div>
+  </div>
+
+  <!-- VOCAB TAB -->
+  <div class="tab-content active" id="content-vocab">
+    <p style="font-size:0.95rem; color:#666; margin-bottom:1rem; text-align:center;">
+      👆 Tap a card to flip it and see a tip!
+    </p>
+    <div class="vocab-grid" id="vocab-grid"></div>
+  </div>
+
+  <!-- QUIZ TAB -->
+  <div class="tab-content" id="content-quiz">
+    <div class="quiz-box" id="quiz-box"></div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div class="tab-content" id="content-chat">
+    <div class="chat-box">
+      <div class="chat-header">
+        🐻 Chat with Bao Bao!
+        <span style="font-size:0.8rem; font-weight:400; opacity:0.8; margin-left:auto;">Your AI English helper</span>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="quick-prompts" id="quick-prompts"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Type in English..." maxlength="200" />
+        <button class="chat-send" id="chat-send" onclick="sendChat()">Send ➤</button>
+      </div>
+    </div>
+    <p style="font-size:0.85rem; color:#888; text-align:center; margin-top:0.8rem;">
+      💡 Bao Bao speaks simple English. Try typing a word you learned!
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ VICTORY ═══════════════════════════ -->
+<div id="screen-victory" class="screen">
+  <div style="font-size:5rem;">🎊🇹🇼🎊</div>
+  <h1 class="victory-title">Amazing Job!</h1>
+  <div class="victory-stars" id="victory-stars"></div>
+  <p class="victory-msg" id="victory-msg"></p>
+  <button class="btn-start" onclick="showMap()" style="margin-top:1rem;">
+    🗺️ Play Again
+  </button>
+</div>
+
+<script>
+const API_BASE = 'http://211.20.245.95:21434/v1';
+const API_KEY  = 'sk-ai-imth_llm_m_GEv0bdt2J2P9xhp1WKaIgExT7rH6P5ZfFx8NGtNMc';
+let AI_MODEL   = 'llama3.2';
+
+const LOCATIONS = [
+  {
+    id: 'taipei',
+    name: 'Taipei City',
+    icon: '🏙️',
+    bg: 'linear-gradient(135deg,#f093fb,#f5576c)',
+    story: 'Big tall buildings and friendly monkeys!',
+    animal: '🐒', animalName: 'Formosan Rock Macaque',
+    animalFact: 'These cute monkeys live in the mountains near Taipei. They love to eat fruits and play!',
+    theme: 'Greetings',
+    vocab: [
+      { word: 'Hello',    emoji: '👋', tip: 'Wave and say Hello to make a friend!' },
+      { word: 'Goodbye',  emoji: '🫡', tip: 'Say Goodbye when you leave somewhere.' },
+      { word: 'Please',   emoji: '🙏', tip: 'Please makes you polite and kind!' },
+      { word: 'Thank you',emoji: '😊', tip: 'Thank you shows you are grateful.' },
+      { word: 'Yes',      emoji: '✅', tip: 'Yes means 是 (shì) in Chinese!' },
+      { word: 'No',       emoji: '❌', tip: 'No means 不是 (bú shì) in Chinese!' },
+    ]
+  },
+  {
+    id: 'sunmoon',
+    name: 'Sun Moon Lake',
+    icon: '🌊',
+    bg: 'linear-gradient(135deg,#4facfe,#00f2fe)',
+    story: 'A magical blue lake with pretty birds!',
+    animal: '🦆', animalName: 'Mandarin Duck',
+    animalFact: 'Mandarin ducks are one of the most beautiful birds in the world. They love calm lakes!',
+    theme: 'Colors',
+    vocab: [
+      { word: 'Blue',     emoji: '🔵', tip: 'The lake is beautiful and blue!' },
+      { word: 'Green',    emoji: '🟢', tip: 'The trees and grass are green.' },
+      { word: 'Yellow',   emoji: '🟡', tip: 'The sun is bright yellow!' },
+      { word: 'Red',      emoji: '🔴', tip: 'Red is the color of a lucky lantern!' },
+      { word: 'White',    emoji: '⬜', tip: 'White clouds float in the sky.' },
+      { word: 'Beautiful',emoji: '✨', tip: 'Say Beautiful when you see something pretty!' },
+    ]
+  },
+  {
+    id: 'taroko',
+    name: 'Taroko Gorge',
+    icon: '🏔️',
+    bg: 'linear-gradient(135deg,#43e97b,#38f9d7)',
+    story: 'Big rocky mountains and a rare rainbow bird!',
+    animal: '🦚', animalName: 'Mikado Pheasant',
+    animalFact: 'The Mikado Pheasant lives only in Taiwan! It is the national bird and very rare.',
+    theme: 'Action Words',
+    vocab: [
+      { word: 'Run',      emoji: '🏃', tip: 'Run fast like a mountain animal!' },
+      { word: 'Jump',     emoji: '🐸', tip: 'Jump over the rocks!' },
+      { word: 'Climb',    emoji: '🧗', tip: 'Climb up the big mountain!' },
+      { word: 'Look',     emoji: '👀', tip: 'Look at the beautiful waterfall!' },
+      { word: 'Listen',   emoji: '👂', tip: 'Listen to the birds singing.' },
+      { word: 'Fly',      emoji: '🦋', tip: 'Birds can fly high in the sky!' },
+    ]
+  },
+  {
+    id: 'nightmarket',
+    name: 'Night Market',
+    icon: '🌙',
+    bg: 'linear-gradient(135deg,#fa709a,#fee140)',
+    story: 'Yummy food and a cute stray cat!',
+    animal: '🐈', animalName: 'Friendly Market Cat',
+    animalFact: 'Taiwan has many friendly stray cats! They love to sit near warm food stalls at night.',
+    theme: 'Food Words',
+    vocab: [
+      { word: 'Noodles',  emoji: '🍜', tip: 'Noodles are long and yummy!' },
+      { word: 'Dumpling', emoji: '🥟', tip: 'Dumplings are wrapped like little pockets!' },
+      { word: 'Tea',      emoji: '🧋', tip: 'Bubble tea was invented in Taiwan!' },
+      { word: 'Sweet',    emoji: '🍡', tip: 'Desserts taste sweet!' },
+      { word: 'Hot',      emoji: '🌶️', tip: 'Be careful — spicy food is very hot!' },
+      { word: 'Delicious',emoji: '😋', tip: 'Say Delicious when food tastes really good!' },
+    ]
+  },
+  {
+    id: 'alishan',
+    name: 'Alishan Forest',
+    icon: '🌲',
+    bg: 'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+    story: 'Tall ancient trees and Bao Bao\'s home!',
+    animal: '🐻', animalName: 'Formosan Black Bear',
+    animalFact: 'The Formosan Black Bear lives in Taiwan\'s mountains. It has a white V-shape on its chest!',
+    theme: 'Nature Words',
+    vocab: [
+      { word: 'Tree',     emoji: '🌲', tip: 'Alishan has trees that are over 2000 years old!' },
+      { word: 'Flower',   emoji: '🌸', tip: 'Cherry blossoms are beautiful pink flowers.' },
+      { word: 'Mountain', emoji: '⛰️', tip: 'Taiwan has many tall mountains!' },
+      { word: 'Cloud',    emoji: '☁️', tip: 'Alishan is famous for a sea of clouds!' },
+      { word: 'Sun',      emoji: '☀️', tip: 'Watch the sunrise over the clouds!' },
+      { word: 'Wild',     emoji: '🌿', tip: 'Wild means living in nature, not a home.' },
+    ]
+  }
+];
+
+const QUICK_PROMPTS = [
+  'How do I say this word?',
+  'Give me an example sentence!',
+  'Tell me about Taiwan animals!',
+  'What should I learn next?',
+  'Quiz me on what I learned!'
+];
+
+let state = {
+  starsPerLocation: {},
+  quizState: null,
+  chatHistory: {},
+  currentLoc: null,
+};
+
+// ── Init ─────────────────────────────────────────────────────────
+window.onload = () => {
+  loadState();
+  detectModel();
+  renderMap();
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('taiwan_adventure');
+    if (saved) state = { ...state, ...JSON.parse(saved) };
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('taiwan_adventure', JSON.stringify(state)); } catch(e) {}
+}
+
+async function detectModel() {
+  try {
+    const r = await fetch(`${API_BASE}/models`, {
+      headers: { Authorization: `Bearer ${API_KEY}` }
+    });
+    if (r.ok) {
+      const data = await r.json();
+      const models = data.data || data.models || [];
+      if (models.length > 0) {
+        AI_MODEL = models[0].id || models[0].name || 'llama3.2';
+        console.log('Using model:', AI_MODEL);
+      }
+    }
+  } catch(e) { console.log('Using default model:', AI_MODEL); }
+}
+
+// ── Screens ───────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  updateStarDisplays();
+}
+
+function showMap() {
+  renderMap();
+  showScreen('screen-map');
+}
+
+function updateStarDisplays() {
+  const total = getTotalStars();
+  document.getElementById('total-stars-welcome').textContent = total;
+  document.getElementById('total-stars-map').textContent = total;
+}
+
+function getTotalStars() {
+  return Object.values(state.starsPerLocation).reduce((a,b) => a+b, 0);
+}
+
+// ── Map ───────────────────────────────────────────────────────────
+function renderMap() {
+  const grid = document.getElementById('map-grid');
+  grid.innerHTML = '';
+  LOCATIONS.forEach(loc => {
+    const stars = state.starsPerLocation[loc.id] || 0;
+    const done = stars > 0;
+    const card = document.createElement('div');
+    card.className = 'location-card' + (done ? ' completed' : '');
+    card.style.background = loc.bg;
+    card.innerHTML = `
+      <div class="loc-icon">${loc.icon}</div>
+      <div class="loc-name" style="color:#fff">${loc.name}</div>
+      <div class="loc-theme" style="color:rgba(255,255,255,0.85)">Learn: ${loc.theme}</div>
+      ${stars > 0 ? `<div class="loc-stars">${'⭐'.repeat(Math.min(stars,6))}</div>` : '<div style="height:1.4rem"></div>'}
+      <div class="loc-animal">${loc.animal}</div>
+    `;
+    card.onclick = () => openLocation(loc.id);
+    grid.appendChild(card);
+  });
+}
+
+// ── Location ──────────────────────────────────────────────────────
+function openLocation(id) {
+  const loc = LOCATIONS.find(l => l.id === id);
+  state.currentLoc = id;
+
+  document.getElementById('loc-header').style.background = loc.bg.replace('linear-gradient', 'linear-gradient');
+  document.getElementById('loc-title').textContent = `${loc.icon} ${loc.name}`;
+  document.getElementById('animal-emoji').textContent = loc.animal;
+  document.getElementById('animal-name').textContent = loc.animalName;
+  document.getElementById('animal-fact').textContent = loc.animalFact;
+  document.getElementById('loc-stars-display').textContent = (state.starsPerLocation[id] || 0) + ' ⭐';
+
+  renderVocab(loc);
+  initQuiz(loc);
+  initChat(loc);
+
+  showTab('vocab');
+  showScreen('screen-location');
+  window.scrollTo(0,0);
+}
+
+// ── Vocab ─────────────────────────────────────────────────────────
+function renderVocab(loc) {
+  const grid = document.getElementById('vocab-grid');
+  grid.innerHTML = '';
+  loc.vocab.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'vocab-card';
+    card.innerHTML = `
+      <div class="card-front">
+        <div class="vocab-emoji">${v.emoji}</div>
+        <div class="vocab-word">${v.word}</div>
+      </div>
+      <div class="card-back">
+        <div class="vocab-emoji">${v.emoji}</div>
+        <div class="vocab-word">${v.word}</div>
+        <div class="vocab-tip">${v.tip}</div>
+      </div>
+    `;
+    card.onclick = () => card.classList.toggle('flipped');
+    grid.appendChild(card);
+  });
+}
+
+// ── Quiz ──────────────────────────────────────────────────────────
+function initQuiz(loc) {
+  const questions = buildQuestions(loc);
+  state.quizState = { loc, questions, index: 0, score: 0, answered: false };
+  renderQuizQuestion();
+}
+
+function buildQuestions(loc) {
+  const allWords = loc.vocab.map(v => v.word);
+  return loc.vocab.map(v => {
+    const wrongs = allWords.filter(w => w !== v.word).sort(() => Math.random()-0.5).slice(0,2);
+    const choices = [v.word, ...wrongs].sort(() => Math.random()-0.5);
+    return { emoji: v.emoji, correct: v.word, choices };
+  });
+}
+
+function renderQuizQuestion() {
+  const qs = state.quizState;
+  const box = document.getElementById('quiz-box');
+
+  if (qs.index >= qs.questions.length) {
+    showQuizResult(qs);
+    return;
+  }
+
+  const q = qs.questions[qs.index];
+  box.innerHTML = `
+    <div class="quiz-progress">Question ${qs.index + 1} of ${qs.questions.length} &nbsp;|&nbsp; Score: ${qs.score} ⭐</div>
+    <div class="quiz-question">What is this?</div>
+    <div class="quiz-emoji">${q.emoji}</div>
+    <div class="quiz-choices">
+      ${q.choices.map(c => `<button class="choice-btn" onclick="answerQuiz('${c}')">${c}</button>`).join('')}
+    </div>
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+    <button class="next-btn hidden" id="next-btn" onclick="nextQuestion()">Next ➤</button>
+  `;
+}
+
+function answerQuiz(choice) {
+  const qs = state.quizState;
+  if (qs.answered) return;
+  qs.answered = true;
+
+  const q = qs.questions[qs.index];
+  const feedback = document.getElementById('quiz-feedback');
+  const btns = document.querySelectorAll('.choice-btn');
+
+  btns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent === q.correct) b.classList.add('correct');
+    else if (b.textContent === choice && choice !== q.correct) b.classList.add('wrong');
+  });
+
+  if (choice === q.correct) {
+    qs.score++;
+    feedback.className = 'quiz-feedback good';
+    feedback.textContent = ['Great job! 🎉','Correct! ⭐','Amazing! 🌟','You got it! 🏆','Excellent! 👏'][Math.floor(Math.random()*5)];
+  } else {
+    feedback.className = 'quiz-feedback bad';
+    feedback.textContent = `Not quite! The answer is "${q.correct}" 😊`;
+  }
+  document.getElementById('next-btn').classList.remove('hidden');
+}
+
+function nextQuestion() {
+  state.quizState.index++;
+  state.quizState.answered = false;
+  renderQuizQuestion();
+}
+
+function showQuizResult(qs) {
+  const stars = qs.score;
+  const prev = state.starsPerLocation[qs.loc.id] || 0;
+  if (stars > prev) {
+    state.starsPerLocation[qs.loc.id] = stars;
+    saveState();
+    document.getElementById('loc-stars-display').textContent = stars + ' ⭐';
+  }
+  updateStarDisplays();
+
+  const msgs = ['Keep trying!','Good work!','Well done!','Great job!','Amazing!','Perfect score! 🏆'];
+  const box = document.getElementById('quiz-box');
+  box.innerHTML = `
+    <div class="quiz-result">
+      <div style="font-size:1.2rem; color:#888; margin-bottom:0.5rem">Quiz Complete!</div>
+      <div class="result-stars">${'⭐'.repeat(stars) || '😊'}</div>
+      <div class="result-msg">${msgs[Math.min(stars, 5)]} — ${stars}/${qs.questions.length} correct!</div>
+      <div class="result-sub">You learned ${qs.loc.theme} words in ${qs.loc.name}!</div>
+      <button class="next-btn" style="margin-top:1.5rem" onclick="initQuiz(LOCATIONS.find(l=>l.id==='${qs.loc.id}'))">
+        🔄 Try Again
+      </button>
+    </div>
+  `;
+
+  if (getTotalStars() >= 24) setTimeout(showVictory, 1000);
+}
+
+// ── Chat ──────────────────────────────────────────────────────────
+function initChat(loc) {
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML = '';
+
+  if (!state.chatHistory[loc.id]) state.chatHistory[loc.id] = [];
+
+  const intro = state.chatHistory[loc.id].length === 0;
+  if (intro) {
+    addMsg('bao', `Hello! I am Bao Bao the Bear! 🐻 Welcome to ${loc.name}! Today we learn about <b>${loc.theme}</b>. Can you say Hello to me? 😊`);
+  } else {
+    state.chatHistory[loc.id].forEach(m => addMsg(m.role, m.text, false));
+  }
+
+  const qp = document.getElementById('quick-prompts');
+  qp.innerHTML = '';
+  QUICK_PROMPTS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.textContent = p;
+    btn.onclick = () => {
+      document.getElementById('chat-input').value = p;
+      sendChat();
+    };
+    qp.appendChild(btn);
+  });
+
+  document.getElementById('chat-input').onkeydown = e => {
+    if (e.key === 'Enter') sendChat();
+  };
+}
+
+function addMsg(role, text, save = true) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  if (save && state.currentLoc) {
+    if (!state.chatHistory[state.currentLoc]) state.chatHistory[state.currentLoc] = [];
+    state.chatHistory[state.currentLoc].push({ role, text });
+    if (state.chatHistory[state.currentLoc].length > 30) {
+      state.chatHistory[state.currentLoc] = state.chatHistory[state.currentLoc].slice(-30);
+    }
+  }
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  sendBtn.disabled = true;
+  addMsg('user', text);
+
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'msg typing';
+  typingDiv.textContent = 'Bao Bao is thinking... 🐾';
+  document.getElementById('chat-messages').appendChild(typingDiv);
+  document.getElementById('chat-messages').scrollTop = 9999;
+
+  const loc = LOCATIONS.find(l => l.id === state.currentLoc);
+  const vocabList = loc ? loc.vocab.map(v => `${v.word} (${v.emoji})`).join(', ') : '';
+
+  const systemPrompt = `You are Bao Bao, a friendly Formosan Black Bear who lives in Taiwan's Alishan Forest! You help children ages 6-12 learn English.
+
+Current location: ${loc ? loc.name : 'Taiwan'}
+Today's theme: ${loc ? loc.theme : 'English'}
+Today's vocabulary: ${vocabList}
+
+Rules:
+- VERY simple English only (grade 1-2 level)
+- Keep replies SHORT: 2-4 sentences maximum
+- Use lots of emojis and excitement!
+- End every reply with one simple question for the child
+- Gently correct English mistakes by showing the right way
+- Teach one vocabulary word per reply when possible
+- Be extremely encouraging and kind
+- Never use difficult words`;
+
+  const history = (state.chatHistory[state.currentLoc] || []).slice(-8).map(m => ({
+    role: m.role === 'bao' ? 'assistant' : 'user',
+    content: m.text.replace(/<[^>]+>/g,'')
+  }));
+
+  try {
+    const res = await fetch(`${API_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...history,
+          { role: 'user', content: text }
+        ],
+        max_tokens: 200,
+        temperature: 0.8
+      })
+    });
+
+    typingDiv.remove();
+
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || 'I did not understand. Try again! 🐾';
+    addMsg('bao', reply.replace(/\n/g, '<br>'));
+  } catch(err) {
+    typingDiv.remove();
+    console.error(err);
+    addMsg('bao', 'Oops! I had trouble connecting. 🐾 But keep practicing! Try typing a word from today\'s lesson!', false);
+  }
+
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────
+function showTab(name) {
+  ['vocab','quiz','chat'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === name);
+    document.getElementById(`content-${t}`).classList.toggle('active', t === name);
+  });
+  if (name === 'chat') {
+    const msgs = document.getElementById('chat-messages');
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+}
+
+// ── Victory ───────────────────────────────────────────────────────
+function showVictory() {
+  const total = getTotalStars();
+  document.getElementById('victory-stars').textContent = '⭐'.repeat(Math.min(total, 30));
+  document.getElementById('victory-msg').textContent =
+    `WOW! You collected ${total} stars and traveled all around Taiwan! You learned English words about greetings, colors, actions, food, and nature. Bao Bao is SO proud of you! 🐻🎉`;
+  showScreen('screen-victory');
+}
+</script>
+</body>
+</html>
