@@ -3,497 +3,297 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiwan Summer Adventure!</title>
+<title>Kaohsiung Summer Camp — World Explorer!</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #1a1a2e; min-height: 100vh; overflow-x: hidden; }
 
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+/* ── WELCOME ── */
+#screen-welcome {
+  background: linear-gradient(160deg, #0f2027, #203a43, #2c5364);
+  text-align: center; padding: 2rem; gap: 1.2rem;
+}
+.globe-spin { font-size: 5rem; animation: spin 8s linear infinite; display: inline-block; }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.welcome-title { font-size: clamp(2rem,6vw,3.8rem); font-weight: 900; color: #fff; line-height: 1.1; }
+.welcome-title span { color: #FFD700; }
+.welcome-sub { font-size: clamp(0.95rem,2.5vw,1.2rem); color: rgba(255,255,255,0.85); max-width: 560px; }
+.flag-row { font-size: 2.5rem; letter-spacing: 0.4rem; }
+.star-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,215,0,0.15); border: 2px solid rgba(255,215,0,0.4);
+  border-radius: 30px; padding: 0.5rem 1.2rem;
+  color: #FFD700; font-size: 1.1rem; font-weight: 700;
+}
+.btn-big {
+  padding: 1.1rem 2.8rem; font-size: 1.5rem; font-weight: 900;
+  background: #FFD700; color: #1a1a2e; border: none; border-radius: 60px;
+  cursor: pointer; box-shadow: 0 6px 30px rgba(255,215,0,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-big:hover { transform: scale(1.06); box-shadow: 0 10px 40px rgba(255,215,0,0.55); }
+.btn-big:active { transform: scale(0.97); }
+.powered-by { color: rgba(255,255,255,0.5); font-size: 0.82rem; }
 
-  /* ── WELCOME ── */
-  #screen-welcome {
-    background: linear-gradient(160deg, #0f3443 0%, #34e89e 100%);
-    text-align: center;
-    padding: 2rem;
-    gap: 1.5rem;
-  }
-  .welcome-title {
-    font-size: clamp(2rem, 6vw, 4rem);
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    line-height: 1.1;
-  }
-  .welcome-subtitle {
-    font-size: clamp(1rem, 3vw, 1.4rem);
-    color: rgba(255,255,255,0.9);
-    max-width: 600px;
-  }
-  .welcome-animals { font-size: 4rem; letter-spacing: 0.5rem; }
-  .btn-start {
-    padding: 1.2rem 3rem;
-    font-size: 1.6rem;
-    font-weight: 800;
-    background: #FFD700;
-    color: #1a1a2e;
-    border: none;
-    border-radius: 60px;
-    cursor: pointer;
-    box-shadow: 0 8px 30px rgba(255,215,0,0.4);
-    transition: transform 0.15s, box-shadow 0.15s;
-    margin-top: 1rem;
-  }
-  .btn-start:hover { transform: scale(1.07); box-shadow: 0 12px 40px rgba(255,215,0,0.6); }
-  .btn-start:active { transform: scale(0.97); }
+/* ── MAP ── */
+#screen-map {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 1.5rem; gap: 1rem; justify-content: flex-start; padding-top: 2rem;
+}
+.map-title { font-size: clamp(1.4rem,4vw,2.2rem); font-weight: 900; color: #FFD700; text-align: center; }
+.map-subtitle { color: rgba(255,255,255,0.7); font-size: 0.95rem; text-align: center; }
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem; width: 100%; max-width: 880px;
+}
+.loc-card {
+  border-radius: 20px; padding: 1.4rem; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  border: 3px solid transparent; position: relative; overflow: hidden;
+  color: #fff;
+}
+.loc-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
+.loc-card.done { border-color: #FFD700; }
+.loc-card.done::after { content: '✅'; position: absolute; top: 10px; right: 14px; font-size: 1.4rem; }
+.loc-icon { font-size: 3rem; }
+.loc-name { font-size: 1.2rem; font-weight: 800; margin: 0.4rem 0 0.1rem; }
+.loc-theme { font-size: 0.88rem; opacity: 0.85; }
+.loc-animal { font-size: 2rem; position: absolute; bottom: 10px; right: 14px; }
+.loc-stars-count { font-size: 0.88rem; color: #FFD700; margin-top: 0.3rem; min-height: 1.2rem; }
+.back-btn {
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.3);
+  color: #fff; padding: 0.5rem 1.1rem; border-radius: 20px;
+  cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: background 0.15s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.2); }
 
-  .star-display {
-    display: flex; gap: 0.5rem; align-items: center;
-    background: rgba(255,255,255,0.15);
-    border-radius: 30px;
-    padding: 0.5rem 1.2rem;
-    color: #FFD700;
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
+/* ── LOCATION ── */
+#screen-location {
+  background: #f4f6ff; padding: 0;
+  justify-content: flex-start; overflow-y: auto; min-height: 100vh;
+}
+.loc-header {
+  width: 100%; padding: 1.2rem 1.2rem 0.8rem;
+  color: #fff; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+}
+.loc-header h2 { font-size: 1.6rem; font-weight: 900; flex: 1; }
+.animal-banner {
+  background: rgba(255,255,255,0.92); margin: 0 1rem 0.8rem;
+  border-radius: 16px; padding: 0.9rem 1.1rem;
+  display: flex; align-items: center; gap: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.animal-big { font-size: 3.5rem; }
+.animal-info h3 { font-size: 1rem; font-weight: 800; color: #1a1a2e; }
+.animal-info p { font-size: 0.85rem; color: #555; margin-top: 0.15rem; line-height: 1.4; }
 
-  /* ── MAP ── */
-  #screen-map {
-    background: linear-gradient(180deg, #87CEEB 0%, #98FB98 60%, #228B22 100%);
-    padding: 1.5rem;
-    gap: 1.5rem;
-    justify-content: flex-start;
-    padding-top: 2rem;
-  }
-  .map-title {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    font-weight: 900;
-    color: #1a1a2e;
-    text-align: center;
-  }
-  .map-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-    width: 100%;
-    max-width: 900px;
-  }
-  .location-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    border: 3px solid transparent;
-    position: relative;
-    overflow: hidden;
-  }
-  .location-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
-  .location-card.completed { border-color: #FFD700; }
-  .location-card.completed::after {
-    content: '✅';
-    position: absolute;
-    top: 12px; right: 12px;
-    font-size: 1.5rem;
-  }
-  .loc-icon { font-size: 3.5rem; }
-  .loc-name { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; margin: 0.5rem 0 0.2rem; }
-  .loc-theme { font-size: 0.95rem; color: #666; }
-  .loc-animal { font-size: 2rem; position: absolute; bottom: 12px; right: 16px; }
-  .loc-stars { font-size: 0.9rem; color: #FFB800; margin-top: 0.3rem; font-weight: 600; }
+.tabs {
+  display: flex; gap: 0.5rem;
+  padding: 0 1rem 0.8rem; width: 100%; max-width: 880px; margin: 0 auto;
+}
+.tab {
+  flex: 1; padding: 0.65rem 0.4rem; border-radius: 12px;
+  border: 2px solid #ddd; background: #fff; cursor: pointer;
+  font-size: 0.95rem; font-weight: 700; color: #888;
+  transition: all 0.18s; text-align: center;
+}
+.tab.active { background: #1a1a2e; color: #FFD700; border-color: #1a1a2e; }
 
-  /* ── LOCATION ── */
-  #screen-location {
-    background: #f0f4ff;
-    padding: 0;
-    justify-content: flex-start;
-    overflow-y: auto;
-    min-height: 100vh;
-  }
-  .loc-header {
-    width: 100%;
-    padding: 1.5rem 1.5rem 1rem;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .loc-header h2 { font-size: 1.8rem; font-weight: 900; flex: 1; }
-  .back-btn {
-    background: rgba(255,255,255,0.25);
-    border: 2px solid rgba(255,255,255,0.5);
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: background 0.15s;
-  }
-  .back-btn:hover { background: rgba(255,255,255,0.4); }
+.tab-content { display: none; width: 100%; max-width: 880px; margin: 0 auto; padding: 0 1rem 2rem; }
+.tab-content.active { display: block; }
 
-  .animal-intro {
-    background: rgba(255,255,255,0.9);
-    margin: 0 1rem 1rem;
-    border-radius: 16px;
-    padding: 1rem 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .animal-big { font-size: 4rem; }
-  .animal-info h3 { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; }
-  .animal-info p { font-size: 0.9rem; color: #555; margin-top: 0.2rem; }
+/* VOCAB */
+.vocab-hint { font-size: 0.88rem; color: #888; text-align: center; margin-bottom: 0.8rem; }
+.vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 0.8rem; }
+.v-card {
+  background: #fff; border-radius: 14px; padding: 1.2rem 0.8rem;
+  text-align: center; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  transition: transform 0.18s; border: 2px solid #eee;
+}
+.v-card:hover { transform: scale(1.05); }
+.v-card.flipped .cf { display: none; }
+.v-card.flipped .cb { display: block; }
+.cb { display: none; }
+.v-emoji { font-size: 3rem; margin-bottom: 0.4rem; }
+.v-word { font-size: 1.15rem; font-weight: 800; color: #1a1a2e; }
+.v-tip { font-size: 0.78rem; color: #666; margin-top: 0.25rem; line-height: 1.35; }
+.v-swahili { font-size: 0.78rem; color: #e67e22; font-weight: 700; margin-top: 0.2rem; }
 
-  .tabs {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0 1rem 1rem;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  .tab {
-    flex: 1;
-    padding: 0.7rem 0.5rem;
-    border-radius: 12px;
-    border: 2px solid #ddd;
-    background: #fff;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #888;
-    transition: all 0.2s;
-    text-align: center;
-  }
-  .tab.active {
-    background: #1a1a2e;
-    color: #fff;
-    border-color: #1a1a2e;
-  }
+/* QUIZ */
+.quiz-wrap { background: #fff; border-radius: 18px; padding: 1.8rem; box-shadow: 0 3px 18px rgba(0,0,0,0.07); }
+.q-prog { font-size: 0.85rem; color: #999; margin-bottom: 0.4rem; font-weight: 600; }
+.q-question { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; text-align: center; }
+.q-emoji { font-size: 5rem; text-align: center; margin: 0.8rem 0; }
+.q-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 0.8rem; }
+.c-btn {
+  padding: 0.9rem; font-size: 1.1rem; font-weight: 700;
+  border-radius: 12px; border: 2.5px solid #e0e0e0;
+  background: #f8f8f8; cursor: pointer; transition: all 0.14s; color: #1a1a2e;
+}
+.c-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #4a90e2; transform: scale(1.03); }
+.c-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+.c-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+.q-feedback { text-align: center; font-size: 1.3rem; font-weight: 800; margin-top: 0.8rem; min-height: 1.8rem; }
+.q-feedback.ok { color: #28a745; }
+.q-feedback.no { color: #dc3545; }
+.next-btn {
+  display: block; width: 100%; margin-top: 0.8rem; padding: 0.9rem;
+  font-size: 1.1rem; font-weight: 800; background: #FFD700;
+  border: none; border-radius: 12px; cursor: pointer; transition: transform 0.14s;
+}
+.next-btn:hover { transform: scale(1.02); }
+.quiz-result { text-align: center; padding: 1.5rem 0; }
+.result-stars { font-size: 2.8rem; margin: 0.5rem 0; }
+.result-msg { font-size: 1.2rem; font-weight: 800; color: #1a1a2e; }
+.result-sub { font-size: 0.9rem; color: #666; margin-top: 0.3rem; }
 
-  .tab-content { display: none; width: 100%; max-width: 900px; margin: 0 auto; padding: 0 1rem 2rem; }
-  .tab-content.active { display: block; }
+/* CHAT */
+.chat-box {
+  background: #fff; border-radius: 18px; overflow: hidden;
+  box-shadow: 0 3px 18px rgba(0,0,0,0.08);
+  display: flex; flex-direction: column; height: 480px;
+}
+.chat-top {
+  padding: 0.9rem 1.1rem; background: #1a1a2e; color: #fff;
+  font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 0.6rem;
+}
+.chat-top span { font-size: 0.78rem; font-weight: 400; opacity: 0.75; margin-left: auto; }
+.chat-msgs {
+  flex: 1; overflow-y: auto; padding: 0.9rem;
+  display: flex; flex-direction: column; gap: 0.7rem; background: #f7f7f7;
+}
+.msg { max-width: 80%; padding: 0.7rem 0.9rem; border-radius: 14px; font-size: 0.97rem; line-height: 1.5; word-wrap: break-word; }
+.msg.simba { background: #fff8e1; border-bottom-left-radius: 4px; align-self: flex-start; color: #1a1a2e; border: 1px solid #ffe082; }
+.msg.user { background: #1a1a2e; color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+.msg.typing { background: #fff8e1; color: #aaa; font-style: italic; align-self: flex-start; border: 1px solid #ffe082; }
+.quick-row { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.5rem 0.9rem; background: #fff; }
+.q-chip {
+  padding: 0.35rem 0.8rem; background: #fff8e1; border: 1px solid #FFD700;
+  border-radius: 14px; font-size: 0.8rem; color: #b8860b; cursor: pointer; font-weight: 600;
+  transition: background 0.14s;
+}
+.q-chip:hover { background: #ffe082; }
+.chat-input-row { display: flex; padding: 0.7rem; gap: 0.5rem; background: #fff; border-top: 1px solid #eee; }
+.chat-input {
+  flex: 1; padding: 0.65rem 1rem; border-radius: 18px;
+  border: 2px solid #ddd; font-size: 0.95rem; outline: none; transition: border-color 0.18s;
+}
+.chat-input:focus { border-color: #FFD700; }
+.send-btn {
+  padding: 0.65rem 1.1rem; background: #FFD700; color: #1a1a2e;
+  border: none; border-radius: 18px; cursor: pointer; font-size: 0.95rem; font-weight: 800; transition: background 0.14s;
+}
+.send-btn:hover { background: #ffc200; }
+.send-btn:disabled { background: #ddd; cursor: not-allowed; color: #999; }
 
-  /* VOCAB */
-  .vocab-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  .vocab-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 1.5rem 1rem;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-    border: 2px solid #eee;
-    perspective: 600px;
-  }
-  .vocab-card:hover { transform: scale(1.05); }
-  .vocab-card.flipped .card-front { display: none; }
-  .vocab-card.flipped .card-back { display: block; }
-  .card-front, .card-back { transition: all 0.3s; }
-  .card-back { display: none; }
-  .vocab-emoji { font-size: 3.5rem; margin-bottom: 0.5rem; }
-  .vocab-word { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; }
-  .vocab-tip { font-size: 0.85rem; color: #666; margin-top: 0.3rem; }
+/* VICTORY */
+#screen-victory {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  text-align: center; padding: 2rem; gap: 1.2rem;
+}
+.v-big { font-size: 4.5rem; }
+.v-title { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #fff; }
+.v-stars { font-size: 2.5rem; }
+.v-msg { font-size: 1.1rem; color: rgba(255,255,255,0.92); max-width: 520px; line-height: 1.6; }
 
-  /* QUIZ */
-  .quiz-box {
-    background: #fff;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  }
-  .quiz-progress {
-    font-size: 0.9rem;
-    color: #888;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-  }
-  .quiz-question {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #1a1a2e;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  .quiz-emoji { font-size: 5rem; text-align: center; margin: 1rem 0; }
-  .quiz-choices {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
-    margin-top: 1rem;
-  }
-  .choice-btn {
-    padding: 1rem;
-    font-size: 1.2rem;
-    font-weight: 700;
-    border-radius: 14px;
-    border: 3px solid #e0e0e0;
-    background: #f8f8f8;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: #1a1a2e;
-  }
-  .choice-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #4a90e2; transform: scale(1.03); }
-  .choice-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
-  .choice-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
-  .quiz-feedback {
-    text-align: center;
-    font-size: 1.4rem;
-    font-weight: 800;
-    margin-top: 1rem;
-    min-height: 2rem;
-  }
-  .quiz-feedback.good { color: #28a745; }
-  .quiz-feedback.bad { color: #dc3545; }
-  .next-btn {
-    display: block;
-    width: 100%;
-    margin-top: 1rem;
-    padding: 1rem;
-    font-size: 1.2rem;
-    font-weight: 800;
-    background: #FFD700;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .next-btn:hover { transform: scale(1.03); }
-
-  .quiz-result {
-    text-align: center;
-    padding: 2rem;
-  }
-  .result-stars { font-size: 3rem; margin: 0.5rem 0; }
-  .result-msg { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; }
-  .result-sub { font-size: 1rem; color: #666; margin-top: 0.5rem; }
-
-  /* CHAT */
-  .chat-box {
-    background: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-  }
-  .chat-header {
-    padding: 1rem 1.2rem;
-    background: #1a1a2e;
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-  }
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    background: #f5f5f5;
-  }
-  .msg {
-    max-width: 80%;
-    padding: 0.8rem 1rem;
-    border-radius: 16px;
-    font-size: 1rem;
-    line-height: 1.5;
-    word-wrap: break-word;
-  }
-  .msg.bao { background: #e8f5e9; border-bottom-left-radius: 4px; align-self: flex-start; color: #1a1a2e; }
-  .msg.user { background: #1a1a2e; color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
-  .msg.typing { background: #e8f5e9; color: #888; font-style: italic; align-self: flex-start; }
-  .chat-input-row {
-    display: flex;
-    padding: 0.8rem;
-    gap: 0.5rem;
-    background: #fff;
-    border-top: 1px solid #eee;
-  }
-  .chat-input {
-    flex: 1;
-    padding: 0.7rem 1rem;
-    border-radius: 20px;
-    border: 2px solid #ddd;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .chat-input:focus { border-color: #4a90e2; }
-  .chat-send {
-    padding: 0.7rem 1.2rem;
-    background: #4a90e2;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 700;
-    transition: background 0.15s;
-  }
-  .chat-send:hover { background: #357abd; }
-  .chat-send:disabled { background: #aaa; cursor: not-allowed; }
-
-  .quick-prompts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #fff;
-  }
-  .quick-btn {
-    padding: 0.4rem 0.9rem;
-    background: #e8f0fe;
-    border: 1px solid #4a90e2;
-    border-radius: 16px;
-    font-size: 0.85rem;
-    color: #1a73e8;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.15s;
-  }
-  .quick-btn:hover { background: #c8d8f8; }
-
-  /* ── VICTORY ── */
-  #screen-victory {
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    text-align: center;
-    padding: 2rem;
-    gap: 1.5rem;
-  }
-  .victory-title { font-size: clamp(2rem,6vw,4rem); font-weight: 900; color: #fff; }
-  .victory-stars { font-size: 3rem; }
-  .victory-msg { font-size: 1.3rem; color: rgba(255,255,255,0.9); max-width: 500px; }
-
-  /* ── UTILS ── */
-  .hidden { display: none !important; }
-  .bounce { animation: bounce 0.5s ease; }
-  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
-
-  @media (max-width: 480px) {
-    .quiz-choices { grid-template-columns: 1fr; }
-    .vocab-grid { grid-template-columns: repeat(2, 1fr); }
-    .map-grid { grid-template-columns: 1fr; }
-  }
+@media (max-width: 480px) {
+  .q-choices { grid-template-columns: 1fr; }
+  .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+  .map-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════ WELCOME ═══════════════════════════ -->
+<!-- WELCOME -->
 <div id="screen-welcome" class="screen active">
-  <div class="welcome-animals">🦢🐢🦋🐈🦜</div>
-  <h1 class="welcome-title">Kaohsiung Summer<br>Camp!</h1>
-  <p class="welcome-subtitle">
-    Explore Kaohsiung, meet amazing animals,<br>
-    and learn English along the way! 🇹🇼
-  </p>
-  <div class="star-display">⭐ <span id="total-stars-welcome">0</span> / 30 Stars Collected</div>
-  <button class="btn-start" onclick="showMap()">🚀 Start Adventure!</button>
-  <p style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-top:0.5rem;">
-    Powered by Bao Bao the AI Bear 🐻
-  </p>
+  <div class="globe-spin">🌍</div>
+  <h1 class="welcome-title">Kaohsiung<br><span>Summer Camp!</span></h1>
+  <p class="welcome-sub">Travel from Taiwan 🇹🇼 to Tanzania 🇹🇿 — meet amazing animals and learn English with your global friends!</p>
+  <div class="flag-row">🇹🇼 🌍 🇹🇿</div>
+  <div class="star-pill">⭐ <span id="stars-welcome">0</span> / 60 Stars Collected</div>
+  <button class="btn-big" onclick="showMap()">🚀 Start Exploring!</button>
+  <p class="powered-by">Powered by Simba 🦁 — your AI friend from Tanzania</p>
 </div>
 
-<!-- ═══════════════════════════ MAP ═══════════════════════════ -->
+<!-- MAP -->
 <div id="screen-map" class="screen">
-  <h1 class="map-title">🗺️ Choose Your Adventure!</h1>
-  <div class="star-display" style="background:rgba(0,0,0,0.15)">
-    ⭐ <span id="total-stars-map">0</span> / 30 Stars
+  <h1 class="map-title">🗺️ World Explorer Map</h1>
+  <p class="map-subtitle">Pick a mission and learn English!</p>
+  <div class="star-pill" style="background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3);">
+    ⭐ <span id="stars-map">0</span> / 60 Stars
   </div>
   <div class="map-grid" id="map-grid"></div>
-  <button class="back-btn" style="background:rgba(0,0,0,0.15); border-color:rgba(0,0,0,0.3); color:#1a1a2e; margin-top:0.5rem;" onclick="showScreen('screen-welcome')">
-    ← Back to Start
-  </button>
+  <button class="back-btn" style="margin-top:0.5rem;" onclick="showScreen('screen-welcome')">← Home</button>
 </div>
 
-<!-- ═══════════════════════════ LOCATION ═══════════════════════════ -->
+<!-- LOCATION -->
 <div id="screen-location" class="screen">
   <div class="loc-header" id="loc-header">
     <button class="back-btn" onclick="showMap()">← Map</button>
     <h2 id="loc-title"></h2>
-    <div class="star-display" style="background:rgba(255,255,255,0.25)">
-      ⭐ <span id="loc-stars-display">0</span>
+    <div class="star-pill" style="background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.4); font-size:0.95rem; padding:0.4rem 1rem;">
+      ⭐ <span id="loc-star-count">0</span>
     </div>
   </div>
 
-  <div style="width:100%; max-width:900px; margin:0 auto; padding:0 1rem;">
-    <div class="animal-intro" id="animal-intro">
-      <div class="animal-big" id="animal-emoji"></div>
+  <div style="width:100%; max-width:880px; margin:0 auto; padding:0 1rem;">
+    <div class="animal-banner">
+      <div class="animal-big" id="a-emoji"></div>
       <div class="animal-info">
-        <h3 id="animal-name"></h3>
-        <p id="animal-fact"></p>
+        <h3 id="a-name"></h3>
+        <p id="a-fact"></p>
       </div>
     </div>
   </div>
 
-  <div class="tabs" style="max-width:900px; margin:0 auto;">
-    <div class="tab active" id="tab-vocab" onclick="showTab('vocab')">📚 Words</div>
-    <div class="tab" id="tab-quiz" onclick="showTab('quiz')">🎯 Quiz</div>
-    <div class="tab" id="tab-chat" onclick="showTab('chat')">💬 Bao Bao</div>
+  <div class="tabs" style="max-width:880px; margin:0 auto;">
+    <div class="tab active" id="tab-vocab" onclick="switchTab('vocab')">📚 Words</div>
+    <div class="tab" id="tab-quiz" onclick="switchTab('quiz')">🎯 Quiz</div>
+    <div class="tab" id="tab-chat" onclick="switchTab('chat')">🦁 Simba</div>
   </div>
 
-  <!-- VOCAB TAB -->
   <div class="tab-content active" id="content-vocab">
-    <p style="font-size:0.95rem; color:#666; margin-bottom:1rem; text-align:center;">
-      👆 Tap a card to flip it and see a tip!
-    </p>
+    <p class="vocab-hint">👆 Tap a card to flip it and learn more!</p>
     <div class="vocab-grid" id="vocab-grid"></div>
   </div>
 
-  <!-- QUIZ TAB -->
   <div class="tab-content" id="content-quiz">
-    <div class="quiz-box" id="quiz-box"></div>
+    <div class="quiz-wrap" id="quiz-wrap"></div>
   </div>
 
-  <!-- CHAT TAB -->
   <div class="tab-content" id="content-chat">
     <div class="chat-box">
-      <div class="chat-header">
-        🐻 Chat with Bao Bao!
-        <span style="font-size:0.8rem; font-weight:400; opacity:0.8; margin-left:auto;">Your AI English helper</span>
+      <div class="chat-top">
+        🦁 Chat with Simba from Tanzania!
+        <span>Your English helper</span>
       </div>
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="quick-prompts" id="quick-prompts"></div>
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="quick-row" id="quick-row"></div>
       <div class="chat-input-row">
         <input class="chat-input" id="chat-input" type="text" placeholder="Type in English..." maxlength="200" />
-        <button class="chat-send" id="chat-send" onclick="sendChat()">Send ➤</button>
+        <button class="send-btn" id="send-btn" onclick="sendChat()">Send ➤</button>
       </div>
     </div>
-    <p style="font-size:0.85rem; color:#888; text-align:center; margin-top:0.8rem;">
-      💡 Bao Bao speaks simple English. Try typing a word you learned!
+    <p style="font-size:0.82rem; color:#999; text-align:center; margin-top:0.7rem;">
+      💡 Try typing a word you just learned — Simba will help you!
     </p>
   </div>
 </div>
 
-<!-- ═══════════════════════════ VICTORY ═══════════════════════════ -->
+<!-- VICTORY -->
 <div id="screen-victory" class="screen">
-  <div style="font-size:5rem;">🎊🇹🇼🎊</div>
-  <h1 class="victory-title">Amazing Job!</h1>
-  <div class="victory-stars" id="victory-stars"></div>
-  <p class="victory-msg" id="victory-msg"></p>
-  <button class="btn-start" onclick="showMap()" style="margin-top:1rem;">
-    🗺️ Play Again
-  </button>
+  <div class="v-big">🎊🌍🎊</div>
+  <h1 class="v-title">Amazing Explorer!</h1>
+  <div class="v-stars" id="v-stars"></div>
+  <p class="v-msg" id="v-msg"></p>
+  <button class="btn-big" onclick="showMap()" style="margin-top:0.8rem;">🗺️ Play Again</button>
 </div>
 
 <script>
@@ -503,503 +303,421 @@ let AI_MODEL   = 'llama3.2';
 
 const LOCATIONS = [
   {
-    id: 'loverivertitle',
-    name: 'Love River',
-    icon: '🌊',
-    bg: 'linear-gradient(135deg,#f093fb,#f5576c)',
-    story: 'A beautiful river in the heart of Kaohsiung!',
-    animal: '🦢', animalName: 'Black-faced Spoonbill',
-    animalFact: 'The Black-faced Spoonbill is one of the rarest birds in the world! It visits southern Taiwan every winter.',
+    id: 'hello',
+    name: 'Say Hello! 👋',
+    icon: '🌍',
+    bg: 'linear-gradient(135deg,#667eea,#764ba2)',
+    animal: '🦁', animalName: 'Simba the Lion Cub — from Tanzania!',
+    animalFact: 'Hi! I am Simba! I come from Tanzania in East Africa. Tanzania is famous for lions, elephants, and Mount Kilimanjaro — the tallest mountain in Africa!',
     theme: 'Greetings & Feelings',
     vocab: [
-      { word: 'Hello',     emoji: '👋', tip: 'Wave and say Hello to make a new friend!' },
-      { word: 'Goodbye',   emoji: '🫡', tip: 'Say Goodbye when you leave somewhere.' },
-      { word: 'Please',    emoji: '🙏', tip: 'Please makes you polite and kind!' },
-      { word: 'Thank you', emoji: '😊', tip: 'Thank you shows you are grateful.' },
-      { word: 'Sorry',     emoji: '😔', tip: 'Say Sorry when you make a mistake.' },
-      { word: 'Yes',       emoji: '✅', tip: 'Yes means 是 (shì) in Chinese!' },
-      { word: 'No',        emoji: '❌', tip: 'No means 不是 (bú shì) in Chinese!' },
-      { word: 'Happy',     emoji: '😄', tip: 'Happy means you feel very good inside!' },
-      { word: 'Sad',       emoji: '😢', tip: 'Sad means you feel unhappy.' },
-      { word: 'Excited',   emoji: '🤩', tip: 'Excited means you feel super happy about something!' },
-      { word: 'Friend',    emoji: '🤝', tip: 'A friend is someone you like to play with!' },
-      { word: 'Name',      emoji: '🪪', tip: 'Your name is what people call you. What is your name?' },
+      { word:'Hello',      emoji:'👋', tip:'The most important word! Say it every morning.', bonus:'Jambo! (Tanzania)' },
+      { word:'Goodbye',    emoji:'✋', tip:'Say this when you leave. Wave your hand!', bonus:'Kwa heri! (Tanzania)' },
+      { word:'Please',     emoji:'🙏', tip:'Always say Please — it is very polite!', bonus:'Tafadhali (Tanzania)' },
+      { word:'Thank you',  emoji:'😊', tip:'Say Thank you when someone helps you.', bonus:'Asante! (Tanzania)' },
+      { word:'Sorry',      emoji:'😔', tip:'Say Sorry when you make a mistake.', bonus:'Samahani (Tanzania)' },
+      { word:'Yes',        emoji:'✅', tip:'Yes = Ndiyo in Swahili!', bonus:'Ndiyo! (Tanzania)' },
+      { word:'No',         emoji:'❌', tip:'No = Hapana in Swahili!', bonus:'Hapana (Tanzania)' },
+      { word:'Happy',      emoji:'😄', tip:'I feel happy when I meet new friends!', bonus:null },
+      { word:'Excited',    emoji:'🤩', tip:'Excited means super happy about something!', bonus:null },
+      { word:'Friend',     emoji:'🤝', tip:'A friend is someone you play with.', bonus:'Rafiki (Tanzania)' },
+      { word:'My name is', emoji:'🪪', tip:'Tell people your name: My name is ___!', bonus:null },
+      { word:'Where are you from?', emoji:'🌐', tip:'Ask this to learn about someone\'s country!', bonus:null },
     ]
   },
   {
-    id: 'lotuspond',
-    name: 'Lotus Pond',
-    icon: '🐉',
+    id: 'tanzania',
+    name: 'Tanzania Safari 🦒',
+    icon: '🌍',
+    bg: 'linear-gradient(135deg,#f7971e,#ffd200)',
+    animal: '🦒', animalName: 'Geoffrey the Giraffe',
+    animalFact: 'Giraffes are the tallest animals on Earth! They live in Tanzania\'s Serengeti — the most famous wildlife park in the world.',
+    theme: 'Animals & Africa',
+    vocab: [
+      { word:'Lion',       emoji:'🦁', tip:'Lions are the kings of Africa! Tanzania has thousands of lions.', bonus:null },
+      { word:'Elephant',   emoji:'🐘', tip:'Elephants are the biggest animals on land!', bonus:null },
+      { word:'Giraffe',    emoji:'🦒', tip:'Giraffes eat leaves from the TOP of trees!', bonus:null },
+      { word:'Zebra',      emoji:'🦓', tip:'Every zebra has a different stripe pattern — like your fingerprint!', bonus:null },
+      { word:'Monkey',     emoji:'🐒', tip:'Monkeys love to swing from tree to tree!', bonus:null },
+      { word:'Bird',       emoji:'🦜', tip:'Tanzania has over 1,000 kinds of birds!', bonus:null },
+      { word:'Big',        emoji:'🐘', tip:'Elephants are very BIG!', bonus:'Kubwa (Tanzania)' },
+      { word:'Fast',       emoji:'🐆', tip:'Cheetahs are the FASTEST animals on Earth!', bonus:null },
+      { word:'Wild',       emoji:'🌿', tip:'Wild means living free in nature.', bonus:null },
+      { word:'Africa',     emoji:'🌍', tip:'Africa is the second biggest continent in the world!', bonus:null },
+      { word:'Safari',     emoji:'🚙', tip:'Safari means journey in Swahili — it\'s a Tanzanian word!', bonus:'Safari (Tanzania)' },
+      { word:'Amazing',    emoji:'🤩', tip:'Tanzania is an AMAZING country!', bonus:null },
+    ]
+  },
+  {
+    id: 'kaohsiung',
+    name: 'Kaohsiung City 🏙️',
+    icon: '🇹🇼',
     bg: 'linear-gradient(135deg,#4facfe,#00f2fe)',
-    story: 'A magical pond with a Dragon Tower and Tiger Tower!',
-    animal: '🐟', animalName: 'Golden Carp',
-    animalFact: 'Golden carp swim in Lotus Pond under the famous Dragon and Tiger Pagodas. They bring good luck!',
-    theme: 'Colors & Numbers',
+    animal: '🦢', animalName: 'Black-faced Spoonbill',
+    animalFact: 'The Black-faced Spoonbill is one of the rarest birds in the world! It visits Kaohsiung in winter. Only about 6,000 exist!',
+    theme: 'Colors & City',
     vocab: [
-      { word: 'Blue',      emoji: '🔵', tip: 'The pond water is deep and blue!' },
-      { word: 'Green',     emoji: '🟢', tip: 'Lotus leaves are bright green.' },
-      { word: 'Yellow',    emoji: '🟡', tip: 'The sun is bright yellow!' },
-      { word: 'Red',       emoji: '🔴', tip: 'The Dragon Tower is painted red!' },
-      { word: 'Pink',      emoji: '🩷', tip: 'Lotus flowers are beautiful and pink!' },
-      { word: 'Orange',    emoji: '🟠', tip: 'Goldfish are a bright orange color!' },
-      { word: 'Purple',    emoji: '🟣', tip: 'Purple is the color of lavender flowers.' },
-      { word: 'White',     emoji: '⬜', tip: 'White clouds float in the blue sky.' },
-      { word: 'One',       emoji: '1️⃣', tip: 'One dragon tower stands by the pond!' },
-      { word: 'Two',       emoji: '2️⃣', tip: 'There are TWO towers — Dragon and Tiger!' },
-      { word: 'Three',     emoji: '3️⃣', tip: 'Count three lotus flowers — 1, 2, 3!' },
-      { word: 'Beautiful', emoji: '✨', tip: 'Say Beautiful when you see something pretty!' },
+      { word:'Red',        emoji:'🔴', tip:'The Dragon Tower at Lotus Pond is red!', bonus:null },
+      { word:'Blue',       emoji:'🔵', tip:'The ocean and sky in Kaohsiung are beautiful blue!', bonus:null },
+      { word:'Green',      emoji:'🟢', tip:'Green trees give us shade in the hot summer!', bonus:null },
+      { word:'Yellow',     emoji:'🟡', tip:'The bright yellow sun makes summer very hot!', bonus:null },
+      { word:'Pink',       emoji:'🩷', tip:'Pink lotus flowers bloom on Lotus Pond!', bonus:null },
+      { word:'Temple',     emoji:'⛩️', tip:'Lotus Pond has a famous Dragon and Tiger Temple!', bonus:null },
+      { word:'Market',     emoji:'🛍️', tip:'Liuhe Night Market has the BEST street food!', bonus:null },
+      { word:'Beach',      emoji:'🏖️', tip:'Cijin Island has a beautiful beach near the city!', bonus:null },
+      { word:'Hot',        emoji:'☀️', tip:'Summer in Kaohsiung is very hot — drink water!', bonus:null },
+      { word:'Delicious',  emoji:'😋', tip:'Say Delicious when food tastes really really good!', bonus:null },
+      { word:'Beautiful',  emoji:'✨', tip:'Kaohsiung is a beautiful city!', bonus:null },
+      { word:'City',       emoji:'🏙️', tip:'Kaohsiung is the second biggest city in Taiwan!', bonus:null },
     ]
   },
   {
-    id: 'cijin',
-    name: 'Cijin Island',
-    icon: '🏖️',
-    bg: 'linear-gradient(135deg,#43e97b,#38f9d7)',
-    story: 'A sunny island with beaches and seafood!',
-    animal: '🐢', animalName: 'Green Sea Turtle',
-    animalFact: 'Green sea turtles swim near Cijin Island! They are gentle giants of the ocean.',
-    theme: 'Ocean & Action Words',
-    vocab: [
-      { word: 'Ocean',     emoji: '🌊', tip: 'The ocean is the huge body of water around the island!' },
-      { word: 'Beach',     emoji: '🏖️', tip: 'The beach has soft sand and warm water!' },
-      { word: 'Fish',      emoji: '🐠', tip: 'Cijin is famous for fresh and yummy fish!' },
-      { word: 'Shell',     emoji: '🐚', tip: 'You can find pretty shells on the beach!' },
-      { word: 'Boat',      emoji: '⛵', tip: 'Take a boat to reach Cijin Island!' },
-      { word: 'Sand',      emoji: '🏜️', tip: 'Sand is soft and warm under your feet at the beach.' },
-      { word: 'Swim',      emoji: '🏊', tip: 'Swim means to move your body through the water!' },
-      { word: 'Run',       emoji: '🏃', tip: 'Run along the beach and feel the wind!' },
-      { word: 'Jump',      emoji: '🐸', tip: 'Jump over the waves!' },
-      { word: 'Look',      emoji: '👀', tip: 'Look at the beautiful ocean!' },
-      { word: 'Hot',       emoji: '☀️', tip: 'Summer in Kaohsiung is very hot!' },
-      { word: 'Cool',      emoji: '🌬️', tip: 'The sea breeze is cool and refreshing!' },
-    ]
-  },
-  {
-    id: 'nightmarket',
-    name: 'Liuhe Night Market',
-    icon: '🌙',
+    id: 'festival',
+    name: 'Festival Fun 🎉',
+    icon: '🎊',
     bg: 'linear-gradient(135deg,#fa709a,#fee140)',
-    story: 'Kaohsiung\'s most famous night market full of yummy food!',
-    animal: '🐈', animalName: 'Friendly Market Cat',
-    animalFact: 'Kaohsiung has many friendly cats who hang around the night market looking for snacks!',
-    theme: 'Food & Taste Words',
+    animal: '🥁', animalName: 'Festival Drummer',
+    animalFact: 'Tanzania has amazing festivals with drumming and dancing! Taiwan has beautiful lantern festivals and dragon boat races. Music connects us all!',
+    theme: 'Festivals & Culture',
     vocab: [
-      { word: 'Noodles',   emoji: '🍜', tip: 'Noodles are long, soft, and super yummy!' },
-      { word: 'Dumpling',  emoji: '🥟', tip: 'Dumplings are little pockets full of tasty filling!' },
-      { word: 'Seafood',   emoji: '🦐', tip: 'Kaohsiung is famous for super fresh seafood!' },
-      { word: 'Rice',      emoji: '🍚', tip: 'Rice is eaten with almost every meal in Taiwan!' },
-      { word: 'Egg',       emoji: '🥚', tip: 'Eggs are used in many Taiwanese dishes!' },
-      { word: 'Bubble Tea',emoji: '🧋', tip: 'Bubble tea with chewy tapioca balls — yum!' },
-      { word: 'Sweet',     emoji: '🍡', tip: 'Desserts and candy taste sweet!' },
-      { word: 'Spicy',     emoji: '🌶️', tip: 'Be careful — spicy food makes your mouth feel hot!' },
-      { word: 'Sour',      emoji: '🍋', tip: 'Lemons taste sour — make a funny face!' },
-      { word: 'Salty',     emoji: '🧂', tip: 'Salt makes food taste salty.' },
-      { word: 'Hungry',    emoji: '🤤', tip: 'Hungry means your tummy wants food!' },
-      { word: 'Delicious', emoji: '😋', tip: 'Say Delicious when food tastes really really good!' },
+      { word:'Festival',   emoji:'🎊', tip:'A festival is a big fun celebration!', bonus:null },
+      { word:'Dance',      emoji:'💃', tip:'People dance at festivals all around the world!', bonus:'Ngoma (Tanzania)' },
+      { word:'Music',      emoji:'🎵', tip:'Music makes everyone feel happy!', bonus:null },
+      { word:'Drum',       emoji:'🥁', tip:'Drums are very important in Tanzanian festivals!', bonus:'Ngoma (Tanzania)' },
+      { word:'Sing',       emoji:'🎤', tip:'Sing a song — don\'t be shy!', bonus:null },
+      { word:'Clap',       emoji:'👏', tip:'Clap your hands to the beat!', bonus:null },
+      { word:'Color',      emoji:'🌈', tip:'Festivals are full of bright, beautiful colors!', bonus:null },
+      { word:'Celebrate',  emoji:'🥳', tip:'We celebrate when something special happens!', bonus:null },
+      { word:'Together',   emoji:'🫂', tip:'Festivals bring people TOGETHER!', bonus:null },
+      { word:'Culture',    emoji:'🌍', tip:'Culture is the food, music, and traditions of a country.', bonus:null },
+      { word:'Flag',       emoji:'🚩', tip:'Every country has its own flag. What does yours look like?', bonus:null },
+      { word:'World',      emoji:'🌐', tip:'Our world has over 190 different countries!', bonus:null },
     ]
   },
   {
-    id: 'forguan',
-    name: 'Fo Guang Shan',
-    icon: '⛩️',
+    id: 'daily',
+    name: 'My Daily Life 🏠',
+    icon: '🌞',
     bg: 'linear-gradient(135deg,#a18cd1,#fbc2eb)',
-    story: 'A giant Buddha temple with colorful butterflies!',
-    animal: '🦋', animalName: 'Formosan Butterfly',
-    animalFact: 'Taiwan is called Butterfly Kingdom! Over 400 kinds of butterflies live here, many near Kaohsiung.',
-    theme: 'Nature & Size Words',
+    animal: '🐈', animalName: 'Lucky the Camp Cat',
+    animalFact: 'Taiwan is famous for friendly stray cats! Lucky lives near the school and loves to watch the kids eat their lunch.',
+    theme: 'Everyday Words',
     vocab: [
-      { word: 'Temple',    emoji: '⛩️', tip: 'Fo Guang Shan is one of the biggest temples in Asia!' },
-      { word: 'Flower',    emoji: '🌸', tip: 'Beautiful flowers grow all around the temple.' },
-      { word: 'Tree',      emoji: '🌳', tip: 'Tall trees give shade from the hot summer sun.' },
-      { word: 'Mountain',  emoji: '⛰️', tip: 'The temple is built on a mountain!' },
-      { word: 'Cloud',     emoji: '☁️', tip: 'White clouds float above the mountain.' },
-      { word: 'Butterfly', emoji: '🦋', tip: 'Butterflies fly from flower to flower!' },
-      { word: 'Bird',      emoji: '🐦', tip: 'Birds sing beautiful songs in the temple garden.' },
-      { word: 'Big',       emoji: '🗿', tip: 'The Buddha statue is very very BIG!' },
-      { word: 'Small',     emoji: '🐜', tip: 'A tiny ant is very small!' },
-      { word: 'Tall',      emoji: '🏯', tip: 'The Buddha is very tall — taller than a building!' },
-      { word: 'Quiet',     emoji: '🤫', tip: 'Temples are quiet and peaceful places.' },
-      { word: 'Peaceful',  emoji: '☮️', tip: 'Peaceful means calm and relaxing — like a temple.' },
+      { word:'Wake up',    emoji:'⏰', tip:'Wake up early — camp starts at 9:00!', bonus:null },
+      { word:'Eat',        emoji:'🍱', tip:'We eat lunch together at camp!', bonus:'Kula (Tanzania)' },
+      { word:'Drink',      emoji:'💧', tip:'Drink water — it is very hot in summer!', bonus:'Kunywa (Tanzania)' },
+      { word:'Study',      emoji:'📚', tip:'We study English together at camp!', bonus:null },
+      { word:'Play',       emoji:'⚽', tip:'Playing is the best part of camp!', bonus:null },
+      { word:'Sleep',      emoji:'😴', tip:'We rest at lunchtime — quiet please!', bonus:'Kulala (Tanzania)' },
+      { word:'Walk',       emoji:'🚶', tip:'Walk — don\'t run — in the classroom!', bonus:null },
+      { word:'Listen',     emoji:'👂', tip:'"Listen to me!" — your teacher\'s favourite phrase!', bonus:null },
+      { word:'Line up',    emoji:'🚶🚶', tip:'"Line up!" means stand in a straight line.', bonus:null },
+      { word:'Sit down',   emoji:'🪑', tip:'"Sit down please" — be polite when asking!', bonus:null },
+      { word:'Help',       emoji:'🤗', tip:'Always help your friends!', bonus:'Saidia (Tanzania)' },
+      { word:'Good job',   emoji:'🏆', tip:'Say "Good job!" to cheer for your friends!', bonus:null },
     ]
   }
 ];
 
 const QUICK_PROMPTS = [
-  'How do I say this word?',
-  'Give me an example sentence!',
-  'Tell me about Taiwan animals!',
-  'What should I learn next?',
+  'What is this word in Swahili?',
+  'Give me a fun example!',
+  'Tell me about Tanzania!',
+  'Teach me an animal word!',
   'Quiz me on what I learned!'
 ];
 
-let state = {
-  starsPerLocation: {},
-  quizState: null,
-  chatHistory: {},
-  currentLoc: null,
-};
+let state = { stars: {}, quiz: null, chatHistory: {}, loc: null };
 
-// ── Init ─────────────────────────────────────────────────────────
 window.onload = () => {
-  loadState();
+  try { const s = localStorage.getItem('ks_camp'); if(s) state = {...state, ...JSON.parse(s)}; } catch(e){}
   detectModel();
   renderMap();
 };
 
-function loadState() {
-  try {
-    const saved = localStorage.getItem('taiwan_adventure');
-    if (saved) state = { ...state, ...JSON.parse(saved) };
-  } catch(e) {}
-}
-
-function saveState() {
-  try { localStorage.setItem('taiwan_adventure', JSON.stringify(state)); } catch(e) {}
+function save() {
+  try { localStorage.setItem('ks_camp', JSON.stringify(state)); } catch(e) {}
 }
 
 async function detectModel() {
   try {
-    const r = await fetch(`${API_BASE}/models`, {
-      headers: { Authorization: `Bearer ${API_KEY}` }
-    });
+    const r = await fetch(`${API_BASE}/models`, { headers:{ Authorization:`Bearer ${API_KEY}` } });
     if (r.ok) {
-      const data = await r.json();
-      const models = data.data || data.models || [];
-      if (models.length > 0) {
-        AI_MODEL = models[0].id || models[0].name || 'llama3.2';
-        console.log('Using model:', AI_MODEL);
-      }
+      const d = await r.json();
+      const list = d.data || d.models || [];
+      if (list.length > 0) AI_MODEL = list[0].id || list[0].name || AI_MODEL;
     }
-  } catch(e) { console.log('Using default model:', AI_MODEL); }
+  } catch(e) {}
 }
 
-// ── Screens ───────────────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  updateStarDisplays();
+  updateStars();
 }
 
-function showMap() {
-  renderMap();
-  showScreen('screen-map');
+function totalStars() { return Object.values(state.stars).reduce((a,b)=>a+b,0); }
+
+function updateStars() {
+  const t = totalStars();
+  document.getElementById('stars-welcome').textContent = t;
+  document.getElementById('stars-map').textContent = t;
 }
 
-function updateStarDisplays() {
-  const total = getTotalStars();
-  document.getElementById('total-stars-welcome').textContent = total;
-  document.getElementById('total-stars-map').textContent = total;
-}
+function showMap() { renderMap(); showScreen('screen-map'); }
 
-function getTotalStars() {
-  return Object.values(state.starsPerLocation).reduce((a,b) => a+b, 0);
-}
-
-// ── Map ───────────────────────────────────────────────────────────
 function renderMap() {
-  const grid = document.getElementById('map-grid');
-  grid.innerHTML = '';
+  const g = document.getElementById('map-grid');
+  g.innerHTML = '';
   LOCATIONS.forEach(loc => {
-    const stars = state.starsPerLocation[loc.id] || 0;
-    const done = stars > 0;
-    const card = document.createElement('div');
-    card.className = 'location-card' + (done ? ' completed' : '');
-    card.style.background = loc.bg;
-    card.innerHTML = `
+    const s = state.stars[loc.id] || 0;
+    const d = document.createElement('div');
+    d.className = 'loc-card' + (s > 0 ? ' done' : '');
+    d.style.background = loc.bg;
+    d.innerHTML = `
       <div class="loc-icon">${loc.icon}</div>
-      <div class="loc-name" style="color:#fff">${loc.name}</div>
-      <div class="loc-theme" style="color:rgba(255,255,255,0.85)">Learn: ${loc.theme}</div>
-      ${stars > 0 ? `<div class="loc-stars">${'⭐'.repeat(Math.min(stars,6))}</div>` : '<div style="height:1.4rem"></div>'}
-      <div class="loc-animal">${loc.animal}</div>
-    `;
-    card.onclick = () => openLocation(loc.id);
-    grid.appendChild(card);
+      <div class="loc-name">${loc.name}</div>
+      <div class="loc-theme">${loc.theme}</div>
+      <div class="loc-stars-count">${s > 0 ? '⭐'.repeat(Math.min(s,12)) : ''}</div>
+      <div class="loc-animal">${loc.animal}</div>`;
+    d.onclick = () => openLoc(loc.id);
+    g.appendChild(d);
   });
 }
 
-// ── Location ──────────────────────────────────────────────────────
-function openLocation(id) {
+function openLoc(id) {
   const loc = LOCATIONS.find(l => l.id === id);
-  state.currentLoc = id;
+  state.loc = id;
 
-  document.getElementById('loc-header').style.background = loc.bg.replace('linear-gradient', 'linear-gradient');
-  document.getElementById('loc-title').textContent = `${loc.icon} ${loc.name}`;
-  document.getElementById('animal-emoji').textContent = loc.animal;
-  document.getElementById('animal-name').textContent = loc.animalName;
-  document.getElementById('animal-fact').textContent = loc.animalFact;
-  document.getElementById('loc-stars-display').textContent = (state.starsPerLocation[id] || 0) + ' ⭐';
+  document.getElementById('loc-header').style.background = loc.bg.replace('linear-gradient','linear-gradient');
+  document.getElementById('loc-title').textContent = loc.name;
+  document.getElementById('a-emoji').textContent = loc.animal;
+  document.getElementById('a-name').textContent = loc.animalName;
+  document.getElementById('a-fact').textContent = loc.animalFact;
+  document.getElementById('loc-star-count').textContent = (state.stars[id] || 0) + ' ⭐';
 
   renderVocab(loc);
-  initQuiz(loc);
+  startQuiz(loc);
   initChat(loc);
-
-  showTab('vocab');
+  switchTab('vocab');
   showScreen('screen-location');
   window.scrollTo(0,0);
 }
 
-// ── Vocab ─────────────────────────────────────────────────────────
+// ── VOCAB ─────────────────────────────────────────────────────────
 function renderVocab(loc) {
-  const grid = document.getElementById('vocab-grid');
-  grid.innerHTML = '';
+  const g = document.getElementById('vocab-grid');
+  g.innerHTML = '';
   loc.vocab.forEach(v => {
-    const card = document.createElement('div');
-    card.className = 'vocab-card';
-    card.innerHTML = `
-      <div class="card-front">
-        <div class="vocab-emoji">${v.emoji}</div>
-        <div class="vocab-word">${v.word}</div>
+    const c = document.createElement('div');
+    c.className = 'v-card';
+    c.innerHTML = `
+      <div class="cf">
+        <div class="v-emoji">${v.emoji}</div>
+        <div class="v-word">${v.word}</div>
       </div>
-      <div class="card-back">
-        <div class="vocab-emoji">${v.emoji}</div>
-        <div class="vocab-word">${v.word}</div>
-        <div class="vocab-tip">${v.tip}</div>
-      </div>
-    `;
-    card.onclick = () => card.classList.toggle('flipped');
-    grid.appendChild(card);
+      <div class="cb">
+        <div class="v-emoji">${v.emoji}</div>
+        <div class="v-word">${v.word}</div>
+        <div class="v-tip">${v.tip}</div>
+        ${v.bonus ? `<div class="v-swahili">🇹🇿 ${v.bonus}</div>` : ''}
+      </div>`;
+    c.onclick = () => c.classList.toggle('flipped');
+    g.appendChild(c);
   });
 }
 
-// ── Quiz ──────────────────────────────────────────────────────────
-function initQuiz(loc) {
-  const questions = buildQuestions(loc);
-  state.quizState = { loc, questions, index: 0, score: 0, answered: false };
-  renderQuizQuestion();
-}
-
-function buildQuestions(loc) {
-  const allWords = loc.vocab.map(v => v.word);
-  return loc.vocab.map(v => {
-    const wrongs = allWords.filter(w => w !== v.word).sort(() => Math.random()-0.5).slice(0,2);
-    const choices = [v.word, ...wrongs].sort(() => Math.random()-0.5);
-    return { emoji: v.emoji, correct: v.word, choices };
+// ── QUIZ ──────────────────────────────────────────────────────────
+function startQuiz(loc) {
+  const shuffled = [...loc.vocab].sort(() => Math.random()-0.5);
+  const questions = shuffled.slice(0,10).map(v => {
+    const wrongs = loc.vocab.filter(x=>x.word!==v.word).sort(()=>Math.random()-0.5).slice(0,2);
+    const choices = [v.word, ...wrongs.map(w=>w.word)].sort(()=>Math.random()-0.5);
+    return { emoji:v.emoji, correct:v.word, choices };
   });
+  state.quiz = { loc, questions, index:0, score:0, answered:false };
+  renderQuestion();
 }
 
-function renderQuizQuestion() {
-  const qs = state.quizState;
-  const box = document.getElementById('quiz-box');
-
-  if (qs.index >= qs.questions.length) {
-    showQuizResult(qs);
-    return;
-  }
-
-  const q = qs.questions[qs.index];
+function renderQuestion() {
+  const q = state.quiz;
+  const box = document.getElementById('quiz-wrap');
+  if (q.index >= q.questions.length) { showResult(q); return; }
+  const cur = q.questions[q.index];
   box.innerHTML = `
-    <div class="quiz-progress">Question ${qs.index + 1} of ${qs.questions.length} &nbsp;|&nbsp; Score: ${qs.score} ⭐</div>
-    <div class="quiz-question">What is this?</div>
-    <div class="quiz-emoji">${q.emoji}</div>
-    <div class="quiz-choices">
-      ${q.choices.map(c => `<button class="choice-btn" onclick="answerQuiz('${c}')">${c}</button>`).join('')}
+    <div class="q-prog">Question ${q.index+1} of ${q.questions.length} &nbsp;|&nbsp; Score: ${q.score} ⭐</div>
+    <div class="q-question">What is this?</div>
+    <div class="q-emoji">${cur.emoji}</div>
+    <div class="q-choices">
+      ${cur.choices.map(c=>`<button class="c-btn" onclick="answer('${c.replace(/'/g,"\\'")}')"> ${c}</button>`).join('')}
     </div>
-    <div class="quiz-feedback" id="quiz-feedback"></div>
-    <button class="next-btn hidden" id="next-btn" onclick="nextQuestion()">Next ➤</button>
-  `;
+    <div class="q-feedback" id="q-fb"></div>
+    <button class="next-btn" id="q-next" style="display:none" onclick="nextQ()">Next ➤</button>`;
 }
 
-function answerQuiz(choice) {
-  const qs = state.quizState;
-  if (qs.answered) return;
-  qs.answered = true;
-
-  const q = qs.questions[qs.index];
-  const feedback = document.getElementById('quiz-feedback');
-  const btns = document.querySelectorAll('.choice-btn');
-
-  btns.forEach(b => {
+function answer(choice) {
+  const q = state.quiz;
+  if (q.answered) return;
+  q.answered = true;
+  const cur = q.questions[q.index];
+  const fb = document.getElementById('q-fb');
+  document.querySelectorAll('.c-btn').forEach(b => {
     b.disabled = true;
-    if (b.textContent === q.correct) b.classList.add('correct');
-    else if (b.textContent === choice && choice !== q.correct) b.classList.add('wrong');
+    if (b.textContent.trim() === cur.correct) b.classList.add('correct');
+    else if (b.textContent.trim() === choice && choice !== cur.correct) b.classList.add('wrong');
   });
-
-  if (choice === q.correct) {
-    qs.score++;
-    feedback.className = 'quiz-feedback good';
-    feedback.textContent = ['Great job! 🎉','Correct! ⭐','Amazing! 🌟','You got it! 🏆','Excellent! 👏'][Math.floor(Math.random()*5)];
+  if (choice === cur.correct) {
+    q.score++;
+    fb.className = 'q-feedback ok';
+    fb.textContent = ['Correct! ⭐','Great job! 🌟','Amazing! 🏆','You got it! 🎉','Excellent! 👏'][Math.floor(Math.random()*5)];
   } else {
-    feedback.className = 'quiz-feedback bad';
-    feedback.textContent = `Not quite! The answer is "${q.correct}" 😊`;
+    fb.className = 'q-feedback no';
+    fb.textContent = `Not quite! The answer is "${cur.correct}" 😊 Try to remember it!`;
   }
-  document.getElementById('next-btn').classList.remove('hidden');
+  document.getElementById('q-next').style.display = 'block';
 }
 
-function nextQuestion() {
-  state.quizState.index++;
-  state.quizState.answered = false;
-  renderQuizQuestion();
+function nextQ() {
+  state.quiz.index++;
+  state.quiz.answered = false;
+  renderQuestion();
 }
 
-function showQuizResult(qs) {
-  const stars = qs.score;
-  const prev = state.starsPerLocation[qs.loc.id] || 0;
-  if (stars > prev) {
-    state.starsPerLocation[qs.loc.id] = stars;
-    saveState();
-    document.getElementById('loc-stars-display').textContent = stars + ' ⭐';
-  }
-  updateStarDisplays();
+function showResult(q) {
+  const s = q.score;
+  const prev = state.stars[q.loc.id] || 0;
+  if (s > prev) { state.stars[q.loc.id] = s; save(); }
+  document.getElementById('loc-star-count').textContent = (state.stars[q.loc.id]||0) + ' ⭐';
+  updateStars();
 
-  const msgs = ['Keep trying!','Good work!','Well done!','Great job!','Amazing!','Perfect score! 🏆'];
-  const box = document.getElementById('quiz-box');
-  box.innerHTML = `
+  const msgs = ['Keep trying — you can do it!','Good effort!','Well done!','Great job!','Excellent!','Amazing!','PERFECT! 🏆','PERFECT! 🏆','PERFECT! 🏆','PERFECT! 🏆','PERFECT! 🏆'];
+  document.getElementById('quiz-wrap').innerHTML = `
     <div class="quiz-result">
-      <div style="font-size:1.2rem; color:#888; margin-bottom:0.5rem">Quiz Complete!</div>
-      <div class="result-stars">${'⭐'.repeat(stars) || '😊'}</div>
-      <div class="result-msg">${msgs[Math.min(stars, 5)]} — ${stars}/${qs.questions.length} correct!</div>
-      <div class="result-sub">You learned ${qs.loc.theme} words in ${qs.loc.name}!</div>
-      <button class="next-btn" style="margin-top:1.5rem" onclick="initQuiz(LOCATIONS.find(l=>l.id==='${qs.loc.id}'))">
-        🔄 Try Again
-      </button>
-    </div>
-  `;
+      <div style="font-size:1rem; color:#888; margin-bottom:0.4rem">Quiz Complete!</div>
+      <div class="result-stars">${s > 0 ? '⭐'.repeat(s) : '😊'}</div>
+      <div class="result-msg">${msgs[Math.min(s,10)]} — ${s}/10 correct!</div>
+      <div class="result-sub">You studied ${q.loc.theme} words!</div>
+      <button class="next-btn" style="margin-top:1.2rem" onclick="startQuiz(LOCATIONS.find(l=>l.id==='${q.loc.id}'))">🔄 Try Again</button>
+    </div>`;
 
-  if (getTotalStars() >= 24) setTimeout(showVictory, 1000);
+  if (totalStars() >= 45) setTimeout(showVictory, 800);
 }
 
-// ── Chat ──────────────────────────────────────────────────────────
+// ── CHAT ──────────────────────────────────────────────────────────
 function initChat(loc) {
-  const msgs = document.getElementById('chat-messages');
-  msgs.innerHTML = '';
-
+  const box = document.getElementById('chat-msgs');
+  box.innerHTML = '';
   if (!state.chatHistory[loc.id]) state.chatHistory[loc.id] = [];
 
-  const intro = state.chatHistory[loc.id].length === 0;
-  if (intro) {
-    addMsg('bao', `Hello! I am Bao Bao the Bear! 🐻 Welcome to ${loc.name}! Today we learn about <b>${loc.theme}</b>. Can you say Hello to me? 😊`);
+  if (state.chatHistory[loc.id].length === 0) {
+    addMsg('simba', `Jambo! 🦁 That means Hello in Swahili — my language from Tanzania! I am Simba. Today we are learning about <b>${loc.theme}</b>. Can you say Hello to me in English? 😊`);
   } else {
     state.chatHistory[loc.id].forEach(m => addMsg(m.role, m.text, false));
   }
 
-  const qp = document.getElementById('quick-prompts');
-  qp.innerHTML = '';
+  const qr = document.getElementById('quick-row');
+  qr.innerHTML = '';
   QUICK_PROMPTS.forEach(p => {
-    const btn = document.createElement('button');
-    btn.className = 'quick-btn';
-    btn.textContent = p;
-    btn.onclick = () => {
-      document.getElementById('chat-input').value = p;
-      sendChat();
-    };
-    qp.appendChild(btn);
+    const b = document.createElement('button');
+    b.className = 'q-chip'; b.textContent = p;
+    b.onclick = () => { document.getElementById('chat-input').value = p; sendChat(); };
+    qr.appendChild(b);
   });
 
-  document.getElementById('chat-input').onkeydown = e => {
-    if (e.key === 'Enter') sendChat();
-  };
+  document.getElementById('chat-input').onkeydown = e => { if(e.key==='Enter') sendChat(); };
 }
 
-function addMsg(role, text, save = true) {
-  const msgs = document.getElementById('chat-messages');
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  div.innerHTML = text;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-
-  if (save && state.currentLoc) {
-    if (!state.chatHistory[state.currentLoc]) state.chatHistory[state.currentLoc] = [];
-    state.chatHistory[state.currentLoc].push({ role, text });
-    if (state.chatHistory[state.currentLoc].length > 30) {
-      state.chatHistory[state.currentLoc] = state.chatHistory[state.currentLoc].slice(-30);
-    }
+function addMsg(role, text, save2=true) {
+  const box = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+  d.innerHTML = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  if (save2 && state.loc) {
+    if (!state.chatHistory[state.loc]) state.chatHistory[state.loc] = [];
+    state.chatHistory[state.loc].push({role, text});
+    if (state.chatHistory[state.loc].length > 30)
+      state.chatHistory[state.loc] = state.chatHistory[state.loc].slice(-30);
   }
 }
 
 async function sendChat() {
-  const input = document.getElementById('chat-input');
-  const sendBtn = document.getElementById('chat-send');
-  const text = input.value.trim();
+  const inp = document.getElementById('chat-input');
+  const btn = document.getElementById('send-btn');
+  const text = inp.value.trim();
   if (!text) return;
-
-  input.value = '';
-  sendBtn.disabled = true;
+  inp.value = ''; btn.disabled = true;
   addMsg('user', text);
 
-  const typingDiv = document.createElement('div');
-  typingDiv.className = 'msg typing';
-  typingDiv.textContent = 'Bao Bao is thinking... 🐾';
-  document.getElementById('chat-messages').appendChild(typingDiv);
-  document.getElementById('chat-messages').scrollTop = 9999;
+  const loc = LOCATIONS.find(l => l.id === state.loc);
+  const vocabList = loc ? loc.vocab.map(v => v.word).join(', ') : '';
 
-  const loc = LOCATIONS.find(l => l.id === state.currentLoc);
-  const vocabList = loc ? loc.vocab.map(v => `${v.word} (${v.emoji})`).join(', ') : '';
+  const typing = document.createElement('div');
+  typing.className = 'msg typing'; typing.textContent = 'Simba is thinking... 🐾';
+  document.getElementById('chat-msgs').appendChild(typing);
+  document.getElementById('chat-msgs').scrollTop = 9999;
 
-  const systemPrompt = `You are Bao Bao, a friendly bear who lives in Kaohsiung, Taiwan! You help children ages 6-12 learn English at summer camp.
+  const system = `You are Simba, a friendly lion cub from Tanzania, East Africa! You are at Kaohsiung Summer Camp helping Taiwanese elementary school children (ages 6-12) learn English.
 
-Current location: ${loc ? loc.name : 'Kaohsiung'}
-Today's theme: ${loc ? loc.theme : 'English'}
-Today's vocabulary: ${vocabList}
+Your home: Tanzania 🇹🇿 — famous for lions, elephants, giraffes, Mount Kilimanjaro, and the Serengeti safari park.
+Their camp is in: Kaohsiung, Taiwan 🇹🇼
+Today's English theme: ${loc?.theme || 'English'}
+Today's vocabulary words: ${vocabList}
 
-Rules:
-- VERY simple English only (grade 1-2 level)
-- Keep replies SHORT: 2-4 sentences maximum
-- Use lots of emojis and excitement!
-- End every reply with one simple question for the child
-- Gently correct English mistakes by showing the right way
-- Teach one vocabulary word per reply when possible
-- Be extremely encouraging and kind
-- Never use difficult words`;
+RULES — follow ALL of these:
+- Use VERY simple English only (Grade 1-2 level). Short words. Short sentences.
+- Keep every reply to 2-4 sentences MAXIMUM. Never write long paragraphs.
+- Use fun emojis in every reply 🦁🌍⭐
+- Gently correct English mistakes: show the right sentence after the child's attempt
+- Teach ONE Swahili word per reply when it feels natural (e.g. "In Tanzania we say Asante — it means Thank you!")
+- ALWAYS end with one simple question to keep the child talking
+- Be extremely warm, encouraging, and playful — like a best friend
+- Never use difficult vocabulary. If unsure, use simpler words.`;
 
-  const history = (state.chatHistory[state.currentLoc] || []).slice(-8).map(m => ({
-    role: m.role === 'bao' ? 'assistant' : 'user',
+  const history = (state.chatHistory[state.loc] || []).slice(-8).map(m => ({
+    role: m.role === 'simba' ? 'assistant' : 'user',
     content: m.text.replace(/<[^>]+>/g,'')
   }));
 
   try {
     const res = await fetch(`${API_BASE}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${API_KEY}` },
       body: JSON.stringify({
         model: AI_MODEL,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...history,
-          { role: 'user', content: text }
-        ],
-        max_tokens: 200,
-        temperature: 0.8
+        messages: [{ role:'system', content:system }, ...history, { role:'user', content:text }],
+        max_tokens: 180, temperature: 0.8
       })
     });
-
-    typingDiv.remove();
-
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    typing.remove();
+    if (!res.ok) throw new Error(res.status);
     const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'I did not understand. Try again! 🐾';
-    addMsg('bao', reply.replace(/\n/g, '<br>'));
+    const reply = data.choices?.[0]?.message?.content || 'Oops! Try again! 🦁';
+    addMsg('simba', reply.replace(/\n/g,'<br>'));
   } catch(err) {
-    typingDiv.remove();
-    console.error(err);
-    addMsg('bao', 'Oops! I had trouble connecting. 🐾 But keep practicing! Try typing a word from today\'s lesson!', false);
+    typing.remove();
+    addMsg('simba', 'Oops! I had trouble connecting. 🦁 But keep practicing! Type one word from today\'s lesson!', false);
   }
-
-  sendBtn.disabled = false;
-  input.focus();
+  btn.disabled = false;
+  inp.focus();
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────
-function showTab(name) {
+// ── TABS ──────────────────────────────────────────────────────────
+function switchTab(name) {
   ['vocab','quiz','chat'].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.toggle('active', t === name);
-    document.getElementById(`content-${t}`).classList.toggle('active', t === name);
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===name);
+    document.getElementById(`content-${t}`).classList.toggle('active', t===name);
   });
-  if (name === 'chat') {
-    const msgs = document.getElementById('chat-messages');
-    msgs.scrollTop = msgs.scrollHeight;
-  }
+  if (name==='chat') document.getElementById('chat-msgs').scrollTop = 9999;
 }
 
-// ── Victory ───────────────────────────────────────────────────────
+// ── VICTORY ───────────────────────────────────────────────────────
 function showVictory() {
-  const total = getTotalStars();
-  document.getElementById('victory-stars').textContent = '⭐'.repeat(Math.min(total, 30));
-  document.getElementById('victory-msg').textContent =
-    `WOW! You collected ${total} stars and explored all of Kaohsiung! You visited Love River, Lotus Pond, Cijin Island, the Night Market, and Fo Guang Shan. Bao Bao is SO proud of you! 🐻🎉`;
+  const t = totalStars();
+  document.getElementById('v-stars').textContent = '⭐'.repeat(Math.min(t, 30));
+  document.getElementById('v-msg').textContent =
+    `WOW! You collected ${t} stars and explored the whole world! You learned greetings, Tanzanian animals, Kaohsiung culture, world festivals, and daily life words. Simba is SO proud of you! 🦁🇹🇿🇹🇼`;
   showScreen('screen-victory');
 }
 </script>
