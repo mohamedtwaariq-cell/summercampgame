@@ -3,722 +3,737 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kaohsiung Summer Camp — World Explorer!</title>
+<title>Tanzania with Teacher Tariq! 🌍</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #1a1a2e; min-height: 100vh; overflow-x: hidden; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#FFD700;--orange:#FF8C00;--green:#1a7a2e;--dark:#0a0f1e;--card:#fff}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--dark);min-height:100vh;overflow-x:hidden}
+canvas#cc{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
 
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
 
-/* ── WELCOME ── */
-#screen-welcome {
-  background: linear-gradient(160deg, #0f2027, #203a43, #2c5364);
-  text-align: center; padding: 2rem; gap: 1.2rem;
+/* ══ WELCOME ══ */
+#sw{
+  background:radial-gradient(ellipse at 50% 0%,#1a3a0a 0%,#0a1a2e 50%,#1a0a0a 100%);
+  text-align:center;padding:2rem;gap:1.1rem;
 }
-.globe-spin { font-size: 5rem; animation: spin 8s linear infinite; display: inline-block; }
-@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-.welcome-title { font-size: clamp(2rem,6vw,3.8rem); font-weight: 900; color: #fff; line-height: 1.1; }
-.welcome-title span { color: #FFD700; }
-.welcome-sub { font-size: clamp(0.95rem,2.5vw,1.2rem); color: rgba(255,255,255,0.85); max-width: 560px; }
-.flag-row { font-size: 2.5rem; letter-spacing: 0.4rem; }
-.star-pill {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  background: rgba(255,215,0,0.15); border: 2px solid rgba(255,215,0,0.4);
-  border-radius: 30px; padding: 0.5rem 1.2rem;
-  color: #FFD700; font-size: 1.1rem; font-weight: 700;
-}
-.btn-big {
-  padding: 1.1rem 2.8rem; font-size: 1.5rem; font-weight: 900;
-  background: #FFD700; color: #1a1a2e; border: none; border-radius: 60px;
-  cursor: pointer; box-shadow: 0 6px 30px rgba(255,215,0,0.35);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.btn-big:hover { transform: scale(1.06); box-shadow: 0 10px 40px rgba(255,215,0,0.55); }
-.btn-big:active { transform: scale(0.97); }
-.powered-by { color: rgba(255,255,255,0.5); font-size: 0.82rem; }
+.wlogo{font-size:5rem;animation:float 3s ease-in-out infinite;display:inline-block}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.wtitle{font-size:clamp(2rem,7vw,4rem);font-weight:900;color:#fff;line-height:1.05}
+.wtitle em{background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.wsub{color:rgba(255,255,255,.8);font-size:clamp(.9rem,2.5vw,1.1rem);max-width:500px;line-height:1.65}
+.tariq-intro{background:rgba(255,255,255,.07);border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:1rem 1.4rem;max-width:480px;text-align:left;display:flex;gap:.9rem;align-items:flex-start}
+.tariq-intro .ti-avatar{font-size:3rem;flex-shrink:0}
+.tariq-intro p{color:rgba(255,255,255,.85);font-size:.88rem;line-height:1.6}
+.tariq-intro strong{color:var(--gold)}
+.star-pill{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,215,0,.12);border:2px solid rgba(255,215,0,.35);border-radius:30px;padding:.42rem 1rem;color:var(--gold);font-size:.95rem;font-weight:700}
+.go-btn{padding:1.1rem 2.8rem;font-size:1.45rem;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a0a00;border:none;border-radius:60px;cursor:pointer;box-shadow:0 6px 30px rgba(255,140,0,.4);transition:transform .15s,box-shadow .15s}
+.go-btn:hover{transform:scale(1.07);box-shadow:0 10px 40px rgba(255,140,0,.65)}
+.go-btn:active{transform:scale(.97)}
 
-/* ── MAP ── */
-#screen-map {
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: 1.5rem; gap: 1rem; justify-content: flex-start; padding-top: 2rem;
-}
-.map-title { font-size: clamp(1.4rem,4vw,2.2rem); font-weight: 900; color: #FFD700; text-align: center; }
-.map-subtitle { color: rgba(255,255,255,0.7); font-size: 0.95rem; text-align: center; }
-.map-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem; width: 100%; max-width: 880px;
-}
-.loc-card {
-  border-radius: 20px; padding: 1.4rem; cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  border: 3px solid transparent; position: relative; overflow: hidden;
-  color: #fff;
-}
-.loc-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
-.loc-card.done { border-color: #FFD700; }
-.loc-card.done::after { content: '✅'; position: absolute; top: 10px; right: 14px; font-size: 1.4rem; }
-.loc-icon { font-size: 3rem; }
-.loc-name { font-size: 1.2rem; font-weight: 800; margin: 0.4rem 0 0.1rem; }
-.loc-theme { font-size: 0.88rem; opacity: 0.85; }
-.loc-animal { font-size: 2rem; position: absolute; bottom: 10px; right: 14px; }
-.loc-stars-count { font-size: 0.88rem; color: #FFD700; margin-top: 0.3rem; min-height: 1.2rem; }
-.back-btn {
-  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.3);
-  color: #fff; padding: 0.5rem 1.1rem; border-radius: 20px;
-  cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: background 0.15s;
-}
-.back-btn:hover { background: rgba(255,255,255,0.2); }
+/* ══ MAP ══ */
+#sm{background:radial-gradient(ellipse at center top,#0a2a10 0%,#0a0f1e 60%);padding:1.5rem;gap:.85rem;justify-content:flex-start;padding-top:2rem}
+.mh{font-size:clamp(1.4rem,4vw,2.1rem);font-weight:900;color:var(--gold);text-align:center}
+.ms{color:rgba(255,255,255,.6);font-size:.88rem;text-align:center}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:.9rem;width:100%;max-width:940px}
+.mc{border-radius:20px;padding:1.3rem;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.45)}
+.mc:hover{transform:translateY(-7px) scale(1.02);box-shadow:0 16px 45px rgba(0,0,0,.55)}
+.mc.done{outline:3px solid var(--gold)}
+.mc.done::after{content:'✅';position:absolute;top:10px;right:12px;font-size:1.3rem}
+.mc-tag{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1rem;opacity:.75;margin-bottom:.3rem}
+.mc-icon{font-size:2.9rem;line-height:1}
+.mc-name{font-size:1.1rem;font-weight:900;margin:.3rem 0 .1rem}
+.mc-sub{font-size:.78rem;opacity:.82}
+.mc-anm{font-size:1.9rem;position:absolute;bottom:10px;right:12px}
+.mc-st{font-size:.8rem;color:var(--gold);min-height:1.1rem;margin-top:.2rem}
+.ghost{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);color:#fff;padding:.42rem .95rem;border-radius:14px;cursor:pointer;font-size:.88rem;font-weight:600;transition:background .15s}
+.ghost:hover{background:rgba(255,255,255,.18)}
 
-/* ── LOCATION ── */
-#screen-location {
-  background: #f4f6ff; padding: 0;
-  justify-content: flex-start; overflow-y: auto; min-height: 100vh;
-}
-.loc-header {
-  width: 100%; padding: 1.2rem 1.2rem 0.8rem;
-  color: #fff; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
-}
-.loc-header h2 { font-size: 1.6rem; font-weight: 900; flex: 1; }
-.animal-banner {
-  background: rgba(255,255,255,0.92); margin: 0 1rem 0.8rem;
-  border-radius: 16px; padding: 0.9rem 1.1rem;
-  display: flex; align-items: center; gap: 1rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-}
-.animal-big { font-size: 3.5rem; }
-.animal-info h3 { font-size: 1rem; font-weight: 800; color: #1a1a2e; }
-.animal-info p { font-size: 0.85rem; color: #555; margin-top: 0.15rem; line-height: 1.4; }
+/* ══ LOCATION ══ */
+#sl{background:#f0f2f9;padding:0;justify-content:flex-start;overflow-y:auto;min-height:100vh}
+.lhdr{width:100%;padding:1rem 1rem .7rem;color:#fff;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.lhdr h2{font-size:1.45rem;font-weight:900;flex:1}
+.acard{background:rgba(255,255,255,.93);margin:0 1rem .7rem;border-radius:14px;padding:.8rem 1rem;display:flex;align-items:center;gap:.9rem;box-shadow:0 2px 12px rgba(0,0,0,.09)}
+.ae{font-size:3.2rem}
+.ai h3{font-size:.93rem;font-weight:800;color:#0a0f1e}
+.ai p{font-size:.79rem;color:#555;line-height:1.4;margin-top:.1rem}
 
-.tabs {
-  display: flex; gap: 0.5rem;
-  padding: 0 1rem 0.8rem; width: 100%; max-width: 880px; margin: 0 auto;
-}
-.tab {
-  flex: 1; padding: 0.65rem 0.4rem; border-radius: 12px;
-  border: 2px solid #ddd; background: #fff; cursor: pointer;
-  font-size: 0.95rem; font-weight: 700; color: #888;
-  transition: all 0.18s; text-align: center;
-}
-.tab.active { background: #1a1a2e; color: #FFD700; border-color: #1a1a2e; }
+.tabs{display:flex;gap:.4rem;padding:0 1rem .7rem;width:100%;max-width:940px;margin:0 auto}
+.tab{flex:1;padding:.6rem .3rem;border-radius:12px;border:2px solid #ddd;background:#fff;cursor:pointer;font-size:.87rem;font-weight:700;color:#aaa;transition:all .18s;text-align:center}
+.tab.active{background:#0a0f1e;color:var(--gold);border-color:#0a0f1e}
 
-.tab-content { display: none; width: 100%; max-width: 880px; margin: 0 auto; padding: 0 1rem 2rem; }
-.tab-content.active { display: block; }
+.tc{display:none;width:100%;max-width:940px;margin:0 auto;padding:0 1rem 2rem}
+.tc.active{display:block}
 
-/* VOCAB */
-.vocab-hint { font-size: 0.88rem; color: #888; text-align: center; margin-bottom: 0.8rem; }
-.vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 0.8rem; }
-.v-card {
-  background: #fff; border-radius: 14px; padding: 1.2rem 0.8rem;
-  text-align: center; cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-  transition: transform 0.18s; border: 2px solid #eee;
-}
-.v-card:hover { transform: scale(1.05); }
-.v-card.flipped .cf { display: none; }
-.v-card.flipped .cb { display: block; }
-.cb { display: none; }
-.v-emoji { font-size: 3rem; margin-bottom: 0.4rem; }
-.v-word { font-size: 1.15rem; font-weight: 800; color: #1a1a2e; }
-.v-tip { font-size: 0.78rem; color: #666; margin-top: 0.25rem; line-height: 1.35; }
-.v-swahili { font-size: 0.78rem; color: #e67e22; font-weight: 700; margin-top: 0.2rem; }
+/* ══ VOCAB ══ */
+.vh{font-size:.82rem;color:#999;text-align:center;margin-bottom:.7rem}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.7rem}
+.vc{background:#fff;border-radius:14px;padding:1.1rem .75rem;text-align:center;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.07);transition:transform .18s;border:2px solid #eee;min-height:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.vc:hover{transform:scale(1.06)}
+.vc.flip .cf{display:none}.vc.flip .cb{display:flex}
+.cf,.cb{flex-direction:column;align-items:center;gap:.15rem;width:100%}
+.cb{display:none}
+.ve{font-size:2.4rem}
+.ven{font-size:1rem;font-weight:800;color:#0a0f1e;margin-top:.15rem}
+.vsw{font-size:.85rem;font-weight:900;color:var(--green);margin-top:.1rem}
+.vsay{font-size:.68rem;color:#888;font-style:italic}
+.vt{font-size:.7rem;color:#555;line-height:1.35;margin-top:.15rem}
+.vnew{position:absolute;top:6px;right:6px;background:var(--gold);color:#1a0a00;font-size:.58rem;font-weight:900;padding:.1rem .35rem;border-radius:6px}
 
-/* QUIZ */
-.quiz-wrap { background: #fff; border-radius: 18px; padding: 1.8rem; box-shadow: 0 3px 18px rgba(0,0,0,0.07); }
-.q-prog { font-size: 0.85rem; color: #999; margin-bottom: 0.4rem; font-weight: 600; }
-.q-question { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; text-align: center; }
-.q-emoji { font-size: 5rem; text-align: center; margin: 0.8rem 0; }
-.q-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 0.8rem; }
-.c-btn {
-  padding: 0.9rem; font-size: 1.1rem; font-weight: 700;
-  border-radius: 12px; border: 2.5px solid #e0e0e0;
-  background: #f8f8f8; cursor: pointer; transition: all 0.14s; color: #1a1a2e;
-}
-.c-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #4a90e2; transform: scale(1.03); }
-.c-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
-.c-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
-.q-feedback { text-align: center; font-size: 1.3rem; font-weight: 800; margin-top: 0.8rem; min-height: 1.8rem; }
-.q-feedback.ok { color: #28a745; }
-.q-feedback.no { color: #dc3545; }
-.next-btn {
-  display: block; width: 100%; margin-top: 0.8rem; padding: 0.9rem;
-  font-size: 1.1rem; font-weight: 800; background: #FFD700;
-  border: none; border-radius: 12px; cursor: pointer; transition: transform 0.14s;
-}
-.next-btn:hover { transform: scale(1.02); }
-.quiz-result { text-align: center; padding: 1.5rem 0; }
-.result-stars { font-size: 2.8rem; margin: 0.5rem 0; }
-.result-msg { font-size: 1.2rem; font-weight: 800; color: #1a1a2e; }
-.result-sub { font-size: 0.9rem; color: #666; margin-top: 0.3rem; }
+/* ══ QUIZ ══ */
+.qshell{background:#fff;border-radius:20px;padding:1.6rem;box-shadow:0 3px 20px rgba(0,0,0,.08)}
+.qbar-wrap{background:#eee;border-radius:10px;height:9px;margin-bottom:.9rem;overflow:hidden}
+.qbar{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--orange));transition:width .4s}
+.qhdr{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;flex-wrap:wrap}
+.qbadge{font-size:.68rem;font-weight:800;padding:.22rem .65rem;border-radius:16px;text-transform:uppercase;letter-spacing:.05rem}
+.b-swahili{background:#e6f4ea;color:#1a7a2e}
+.b-tf{background:#fff3e0;color:#e65100}
+.b-match{background:#e8eaf6;color:#3949ab}
+.qscr{font-size:.82rem;font-weight:700;color:#999;margin-left:auto}
+.qstreak{font-size:.82rem;font-weight:700;color:var(--orange)}
+.qq{font-size:1.25rem;font-weight:800;color:#0a0f1e;text-align:center;margin:.45rem 0 .2rem;line-height:1.35}
+.qemoji{font-size:4.2rem;text-align:center;margin:.4rem 0}
 
-/* CHAT */
-.chat-box {
-  background: #fff; border-radius: 18px; overflow: hidden;
-  box-shadow: 0 3px 18px rgba(0,0,0,0.08);
-  display: flex; flex-direction: column; height: 480px;
-}
-.chat-top {
-  padding: 0.9rem 1.1rem; background: #1a1a2e; color: #fff;
-  font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 0.6rem;
-}
-.chat-top span { font-size: 0.78rem; font-weight: 400; opacity: 0.75; margin-left: auto; }
-.chat-msgs {
-  flex: 1; overflow-y: auto; padding: 0.9rem;
-  display: flex; flex-direction: column; gap: 0.7rem; background: #f7f7f7;
-}
-.msg { max-width: 80%; padding: 0.7rem 0.9rem; border-radius: 14px; font-size: 0.97rem; line-height: 1.5; word-wrap: break-word; }
-.msg.simba { background: #fff8e1; border-bottom-left-radius: 4px; align-self: flex-start; color: #1a1a2e; border: 1px solid #ffe082; }
-.msg.user { background: #1a1a2e; color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
-.msg.typing { background: #fff8e1; color: #aaa; font-style: italic; align-self: flex-start; border: 1px solid #ffe082; }
-.quick-row { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.5rem 0.9rem; background: #fff; }
-.q-chip {
-  padding: 0.35rem 0.8rem; background: #fff8e1; border: 1px solid #FFD700;
-  border-radius: 14px; font-size: 0.8rem; color: #b8860b; cursor: pointer; font-weight: 600;
-  transition: background 0.14s;
-}
-.q-chip:hover { background: #ffe082; }
-.chat-input-row { display: flex; padding: 0.7rem; gap: 0.5rem; background: #fff; border-top: 1px solid #eee; }
-.chat-input {
-  flex: 1; padding: 0.65rem 1rem; border-radius: 18px;
-  border: 2px solid #ddd; font-size: 0.95rem; outline: none; transition: border-color 0.18s;
-}
-.chat-input:focus { border-color: #FFD700; }
-.send-btn {
-  padding: 0.65rem 1.1rem; background: #FFD700; color: #1a1a2e;
-  border: none; border-radius: 18px; cursor: pointer; font-size: 0.95rem; font-weight: 800; transition: background 0.14s;
-}
-.send-btn:hover { background: #ffc200; }
-.send-btn:disabled { background: #ddd; cursor: not-allowed; color: #999; }
+/* Pick */
+.pick4{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.65rem}
+.pb{padding:.8rem .4rem;font-size:1rem;font-weight:800;border-radius:13px;border:3px solid #e0e0e0;background:#f8f8f8;cursor:pointer;transition:all .14s;color:#0a0f1e;text-align:center;line-height:1.3}
+.pb:hover:not(:disabled){background:#e8f0fe;border-color:#4a90e2;transform:scale(1.04)}
+.pb.ok{background:#d4edda;border-color:#28a745;color:#155724;animation:pop .35s}
+.pb.no{background:#f8d7da;border-color:#dc3545;color:#721c24;animation:shake .35s}
+/* TF */
+.tf2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.75rem}
+.tfb{padding:1.3rem .5rem;font-size:1.5rem;font-weight:900;border-radius:16px;border:3px solid;cursor:pointer;transition:all .15s;text-align:center}
+.tfy{border-color:#28a745;background:#f0fff4;color:#28a745}
+.tfn{border-color:#dc3545;background:#fff5f5;color:#dc3545}
+.tfy:hover:not(:disabled){background:#28a745;color:#fff;transform:scale(1.06)}
+.tfn:hover:not(:disabled){background:#dc3545;color:#fff;transform:scale(1.06)}
+.tfb.ok{animation:pop .35s;transform:scale(1.08)}
+.tfb.no{opacity:.45;animation:shake .35s}
+/* Match */
+.match4{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.65rem}
+.mb{padding:.85rem .2rem;font-size:1.8rem;border-radius:14px;border:3px solid #e0e0e0;background:#f8f8f8;cursor:pointer;transition:all .14s;text-align:center}
+.mb:hover:not(:disabled){background:#fff8e1;border-color:var(--gold);transform:scale(1.1)}
+.mb.ok{background:#d4edda;border-color:#28a745;animation:pop .35s}
+.mb.no{background:#f8d7da;border-color:#dc3545;animation:shake .35s}
+/* Swahili type */
+.sw4{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.65rem}
+.swb{padding:.8rem .4rem;font-size:1.05rem;font-weight:800;border-radius:13px;border:3px solid rgba(26,122,46,.3);background:rgba(26,122,46,.06);cursor:pointer;transition:all .14s;color:#1a7a2e;text-align:center}
+.swb:hover:not(:disabled){background:rgba(26,122,46,.15);border-color:var(--green);transform:scale(1.04)}
+.swb.ok{background:#d4edda;border-color:#28a745;color:#155724;animation:pop .35s}
+.swb.no{background:#f8d7da;border-color:#dc3545;color:#721c24;animation:shake .35s}
 
-/* VICTORY */
-#screen-victory {
-  background: linear-gradient(135deg, #f6d365, #fda085);
-  text-align: center; padding: 2rem; gap: 1.2rem;
-}
-.v-big { font-size: 4.5rem; }
-.v-title { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #fff; }
-.v-stars { font-size: 2.5rem; }
-.v-msg { font-size: 1.1rem; color: rgba(255,255,255,0.92); max-width: 520px; line-height: 1.6; }
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.22)}100%{transform:scale(1.08)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
 
-@media (max-width: 480px) {
-  .q-choices { grid-template-columns: 1fr; }
-  .vocab-grid { grid-template-columns: repeat(2, 1fr); }
-  .map-grid { grid-template-columns: 1fr; }
+.qfb{text-align:center;font-size:1.1rem;font-weight:800;min-height:1.7rem;margin-top:.65rem;line-height:1.4}
+.qfb.ok{color:#28a745}.qfb.no{color:#dc3545}
+.nxt{display:block;width:100%;margin-top:.65rem;padding:.82rem;font-size:1rem;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:13px;cursor:pointer;transition:transform .14s;color:#1a0a00}
+.nxt:hover{transform:scale(1.02)}
+/* Result */
+.qres{text-align:center;padding:1.2rem 0}
+.gcircle{width:115px;height:115px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto .75rem;border:5px solid;font-weight:900}
+.ga{border-color:#28a745;background:#f0fff4;color:#28a745}
+.gb{border-color:#1a73e8;background:#e8f0fe;color:#1a73e8}
+.gc{border-color:var(--orange);background:#fff8e1;color:var(--orange)}
+.gd{border-color:#dc3545;background:#fff5f5;color:#dc3545}
+.gn{font-size:2rem;line-height:1}.gl{font-size:.95rem}
+.rstars{font-size:2.2rem;margin:.4rem 0;word-break:break-all}
+.rmsg{font-size:1.05rem;font-weight:800;color:#0a0f1e}
+.rsub{font-size:.82rem;color:#777;margin-top:.25rem}
+
+/* ══ DRUM GAME ══ */
+.drum-game{background:#fff;border-radius:18px;padding:1.4rem;box-shadow:0 3px 20px rgba(0,0,0,.08);text-align:center;margin-bottom:1rem}
+.drum-title{font-size:1.1rem;font-weight:900;color:#0a0f1e;margin-bottom:.3rem}
+.drum-sub{font-size:.82rem;color:#777;margin-bottom:1rem}
+.drum-btn{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#8B4513,#3d1a00);border:6px solid #c87941;cursor:pointer;font-size:3rem;transition:transform .1s,box-shadow .1s;box-shadow:0 8px 20px rgba(0,0,0,.35);display:inline-flex;align-items:center;justify-content:center}
+.drum-btn:active,.drum-btn.hit{transform:scale(.88);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.drum-score{font-size:2rem;font-weight:900;color:var(--orange);margin-top:.7rem}
+.drum-pattern{font-size:1.1rem;color:#555;letter-spacing:.2rem;margin:.3rem 0;min-height:1.6rem;font-weight:700}
+.drum-msg{font-size:.88rem;color:#999;margin-top:.3rem}
+
+/* ══ CHAT ══ */
+.cshell{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 3px 18px rgba(0,0,0,.09);display:flex;flex-direction:column;height:465px}
+.ctop{padding:.8rem 1rem;background:#0a0f1e;color:#fff;font-weight:800;font-size:.92rem;display:flex;align-items:center;gap:.5rem}
+.ctop small{font-size:.72rem;font-weight:400;opacity:.7;margin-left:auto}
+.cmsgs{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.6rem;background:#f5f6ff}
+.cmsg{max-width:83%;padding:.65rem .9rem;border-radius:14px;font-size:.9rem;line-height:1.5;word-wrap:break-word}
+.cmsg.t{background:#fff8e1;border:1px solid #ffe082;border-bottom-left-radius:4px;align-self:flex-start;color:#0a0f1e}
+.cmsg.u{background:#0a0f1e;color:var(--gold);border-bottom-right-radius:4px;align-self:flex-end}
+.cmsg.typing{background:#fff8e1;color:#ccc;font-style:italic;align-self:flex-start;border:1px solid #ffe082}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;padding:.42rem .8rem;background:#fff;border-top:1px solid #eee}
+.chip{padding:.28rem .72rem;background:#fff8e1;border:1px solid var(--gold);border-radius:12px;font-size:.73rem;color:#a0720a;cursor:pointer;font-weight:600;transition:background .14s}
+.chip:hover{background:#ffe082}
+.crow{display:flex;padding:.6rem;gap:.4rem;background:#fff;border-top:1px solid #eee}
+.cinput{flex:1;padding:.58rem .9rem;border-radius:16px;border:2px solid #ddd;font-size:.9rem;outline:none;transition:border-color .18s}
+.cinput:focus{border-color:var(--gold)}
+.csend{padding:.58rem 1rem;background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a0a00;border:none;border-radius:16px;cursor:pointer;font-size:.9rem;font-weight:800}
+.csend:disabled{opacity:.4;cursor:not-allowed}
+
+/* ══ VICTORY ══ */
+#sv{background:radial-gradient(ellipse at center,#0a2a10,#0a0f1e);text-align:center;padding:2rem;gap:1rem}
+.vbig{font-size:5rem}
+.vtitle{font-size:clamp(2rem,6vw,3.5rem);font-weight:900;color:var(--gold)}
+.vmsg{font-size:1rem;color:rgba(255,255,255,.85);max-width:510px;line-height:1.65}
+.vstars{font-size:2.3rem;word-break:break-all;max-width:380px}
+
+@media(max-width:480px){
+  .pick4,.tf2,.sw4{grid-template-columns:1fr}
+  .match4{grid-template-columns:repeat(2,1fr)}
+  .vgrid{grid-template-columns:repeat(2,1fr)}
+  .mgrid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
+<canvas id="cc"></canvas>
 
-<!-- WELCOME -->
-<div id="screen-welcome" class="screen active">
-  <div class="globe-spin">🌍</div>
-  <h1 class="welcome-title">Kaohsiung<br><span>Summer Camp!</span></h1>
-  <p class="welcome-sub">Travel from Taiwan 🇹🇼 to Tanzania 🇹🇿 — meet amazing animals and learn English with your global friends!</p>
-  <div class="flag-row">🇹🇼 🌍 🇹🇿</div>
-  <div class="star-pill">⭐ <span id="stars-welcome">0</span> / 60 Stars Collected</div>
-  <button class="btn-big" onclick="showMap()">🚀 Start Exploring!</button>
-  <p class="powered-by">Powered by Simba 🦁 — your AI friend from Tanzania</p>
+<!-- ══════ WELCOME ══════ -->
+<div id="sw" class="screen active">
+  <div class="wlogo">🌍</div>
+  <h1 class="wtitle">Tanzania with<br><em>Teacher Tariq!</em></h1>
+  <p class="wsub">Learn Swahili words, discover amazing Tanzanian culture, and have fun — Jambo! 🦁</p>
+  <div class="tariq-intro">
+    <div class="ti-avatar">👨‍🏫</div>
+    <p><strong>"Jambo! I am Teacher Tariq.</strong> I come from Tanzania 🇹🇿. Today we will see my country — the flag, pretty cloth, fun art, mats & baskets, and big drums! <strong>Karibu!</strong> (Welcome!)"</p>
+  </div>
+  <div class="star-pill">⭐ <span id="sw-st">0</span> / 50 Stars</div>
+  <button class="go-btn" onclick="showMap()">🚀 Karibu! Let's Go!</button>
 </div>
 
-<!-- MAP -->
-<div id="screen-map" class="screen">
-  <h1 class="map-title">🗺️ World Explorer Map</h1>
-  <p class="map-subtitle">Pick a mission and learn English!</p>
-  <div class="star-pill" style="background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3);">
-    ⭐ <span id="stars-map">0</span> / 60 Stars
-  </div>
-  <div class="map-grid" id="map-grid"></div>
-  <button class="back-btn" style="margin-top:0.5rem;" onclick="showScreen('screen-welcome')">← Home</button>
+<!-- ══════ MAP ══════ -->
+<div id="sm" class="screen">
+  <h1 class="mh">🗺️ Tanzania Adventure Map</h1>
+  <p class="ms">5 topics from Teacher Tariq's class · Collect all 50 stars!</p>
+  <div class="star-pill" style="background:rgba(255,215,0,.08)">⭐ <span id="sm-st">0</span> / 50</div>
+  <div class="mgrid" id="mgrid"></div>
+  <button class="ghost" style="margin-top:.6rem" onclick="showScreen('sw')">← Home</button>
 </div>
 
-<!-- LOCATION -->
-<div id="screen-location" class="screen">
-  <div class="loc-header" id="loc-header">
-    <button class="back-btn" onclick="showMap()">← Map</button>
-    <h2 id="loc-title"></h2>
-    <div class="star-pill" style="background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.4); font-size:0.95rem; padding:0.4rem 1rem;">
-      ⭐ <span id="loc-star-count">0</span>
-    </div>
+<!-- ══════ LOCATION ══════ -->
+<div id="sl" class="screen">
+  <div class="lhdr" id="lhdr">
+    <button class="ghost" onclick="showMap()">← Map</button>
+    <h2 id="ltitle"></h2>
+    <div class="star-pill" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);font-size:.85rem;padding:.32rem .85rem">⭐ <span id="lsc">0</span></div>
   </div>
-
-  <div style="width:100%; max-width:880px; margin:0 auto; padding:0 1rem;">
-    <div class="animal-banner">
-      <div class="animal-big" id="a-emoji"></div>
-      <div class="animal-info">
-        <h3 id="a-name"></h3>
-        <p id="a-fact"></p>
+  <div style="width:100%;max-width:940px;margin:0 auto;padding:0 1rem">
+    <div class="acard"><div class="ae" id="ae"></div><div class="ai"><h3 id="an"></h3><p id="af"></p></div></div>
+  </div>
+  <div class="tabs" style="max-width:940px;margin:0 auto">
+    <div class="tab active" id="tab-v" onclick="switchTab('v')">📚 Words</div>
+    <div class="tab" id="tab-q" onclick="switchTab('q')">🎯 Quiz</div>
+    <div class="tab" id="tab-d" onclick="switchTab('d')" id="tab-d" style="display:none">🥁 Drum!</div>
+    <div class="tab" id="tab-c" onclick="switchTab('c')">👨‍🏫 Tariq</div>
+  </div>
+  <div class="tc active" id="tc-v">
+    <p class="vh">👆 Tap each card to flip — learn the Swahili word!</p>
+    <div class="vgrid" id="vgrid"></div>
+  </div>
+  <div class="tc" id="tc-q">
+    <div class="qshell" id="qshell"></div>
+  </div>
+  <div class="tc" id="tc-d">
+    <div class="drum-game">
+      <div class="drum-title">🥁 Ngoma — Hit the Drum!</div>
+      <div class="drum-sub">Tap as fast as you can — BOOM BOOM BOOM! 💥</div>
+      <button class="drum-btn" id="drum-btn" onclick="hitDrum()">🥁</button>
+      <div class="drum-score"><span id="drum-count">0</span> BOOMS!</div>
+      <div class="drum-pattern" id="drum-pattern"></div>
+      <div class="drum-msg" id="drum-msg">Press the drum and make some noise!</div>
+    </div>
+    <div class="qshell" id="drum-quiz"></div>
+  </div>
+  <div class="tc" id="tc-c">
+    <div class="cshell">
+      <div class="ctop" id="ctop">👨‍🏫 Teacher Tariq from Tanzania! <small>Ask me anything!</small></div>
+      <div class="cmsgs" id="cmsgs"></div>
+      <div class="chips" id="chips"></div>
+      <div class="crow">
+        <input class="cinput" id="cinput" type="text" placeholder="Ask Teacher Tariq in English..." maxlength="200"/>
+        <button class="csend" id="csend" onclick="sendChat()">Send ➤</button>
       </div>
     </div>
-  </div>
-
-  <div class="tabs" style="max-width:880px; margin:0 auto;">
-    <div class="tab active" id="tab-vocab" onclick="switchTab('vocab')">📚 Words</div>
-    <div class="tab" id="tab-quiz" onclick="switchTab('quiz')">🎯 Quiz</div>
-    <div class="tab" id="tab-chat" onclick="switchTab('chat')">🦁 Simba</div>
-  </div>
-
-  <div class="tab-content active" id="content-vocab">
-    <p class="vocab-hint">👆 Tap a card to flip it and learn more!</p>
-    <div class="vocab-grid" id="vocab-grid"></div>
-  </div>
-
-  <div class="tab-content" id="content-quiz">
-    <div class="quiz-wrap" id="quiz-wrap"></div>
-  </div>
-
-  <div class="tab-content" id="content-chat">
-    <div class="chat-box">
-      <div class="chat-top">
-        🦁 Chat with Simba from Tanzania!
-        <span>Your English helper</span>
-      </div>
-      <div class="chat-msgs" id="chat-msgs"></div>
-      <div class="quick-row" id="quick-row"></div>
-      <div class="chat-input-row">
-        <input class="chat-input" id="chat-input" type="text" placeholder="Type in English..." maxlength="200" />
-        <button class="send-btn" id="send-btn" onclick="sendChat()">Send ➤</button>
-      </div>
-    </div>
-    <p style="font-size:0.82rem; color:#999; text-align:center; margin-top:0.7rem;">
-      💡 Try typing a word you just learned — Simba will help you!
-    </p>
+    <p style="font-size:.76rem;color:#aaa;text-align:center;margin-top:.55rem">💡 Ask about Tanzania, Swahili words, or anything from today's lesson!</p>
   </div>
 </div>
 
-<!-- VICTORY -->
-<div id="screen-victory" class="screen">
-  <div class="v-big">🎊🌍🎊</div>
-  <h1 class="v-title">Amazing Explorer!</h1>
-  <div class="v-stars" id="v-stars"></div>
-  <p class="v-msg" id="v-msg"></p>
-  <button class="btn-big" onclick="showMap()" style="margin-top:0.8rem;">🗺️ Play Again</button>
+<!-- ══════ VICTORY ══════ -->
+<div id="sv" class="screen">
+  <div class="vbig">🏆</div>
+  <h1 class="vtitle">Asante Sana!</h1>
+  <div class="vstars" id="vstars"></div>
+  <p class="vmsg" id="vmsg"></p>
+  <p style="color:rgba(255,255,255,.5);font-size:.82rem;margin-top:.3rem">"Asante sana" = Thank you so much! 🇹🇿</p>
+  <button class="go-btn" onclick="showMap()" style="margin-top:.8rem">🗺️ Play Again</button>
 </div>
 
 <script>
-const API_BASE = 'http://211.20.245.95:21434/v1';
-const API_KEY  = 'sk-ai-imth_llm_m_GEv0bdt2J2P9xhp1WKaIgExT7rH6P5ZfFx8NGtNMc';
-let AI_MODEL   = 'llama3.2';
+/* ══ CONFIG ══ */
+const API_BASE='http://211.20.245.95:21434/v1';
+const API_KEY='sk-ai-imth_llm_m_GEv0bdt2J2P9xhp1WKaIgExT7rH6P5ZfFx8NGtNMc';
+let AI_MODEL='llama3.2';
 
-const LOCATIONS = [
+/* ══ SECTIONS (directly from Teacher Tariq's slides) ══ */
+const SECS=[
   {
-    id: 'hello',
-    name: 'Say Hello! 👋',
-    icon: '🌍',
-    bg: 'linear-gradient(135deg,#667eea,#764ba2)',
-    animal: '🦁', animalName: 'Simba the Lion Cub — from Tanzania!',
-    animalFact: 'Hi! I am Simba! I come from Tanzania in East Africa. Tanzania is famous for lions, elephants, and Mount Kilimanjaro — the tallest mountain in Africa!',
-    theme: 'Greetings & Feelings',
-    vocab: [
-      { word:'Hello',      emoji:'👋', tip:'The most important word! Say it every morning.', bonus:'Jambo! (Tanzania)' },
-      { word:'Goodbye',    emoji:'✋', tip:'Say this when you leave. Wave your hand!', bonus:'Kwa heri! (Tanzania)' },
-      { word:'Please',     emoji:'🙏', tip:'Always say Please — it is very polite!', bonus:'Tafadhali (Tanzania)' },
-      { word:'Thank you',  emoji:'😊', tip:'Say Thank you when someone helps you.', bonus:'Asante! (Tanzania)' },
-      { word:'Sorry',      emoji:'😔', tip:'Say Sorry when you make a mistake.', bonus:'Samahani (Tanzania)' },
-      { word:'Yes',        emoji:'✅', tip:'Yes = Ndiyo in Swahili!', bonus:'Ndiyo! (Tanzania)' },
-      { word:'No',         emoji:'❌', tip:'No = Hapana in Swahili!', bonus:'Hapana (Tanzania)' },
-      { word:'Happy',      emoji:'😄', tip:'I feel happy when I meet new friends!', bonus:null },
-      { word:'Excited',    emoji:'🤩', tip:'Excited means super happy about something!', bonus:null },
-      { word:'Friend',     emoji:'🤝', tip:'A friend is someone you play with.', bonus:'Rafiki (Tanzania)' },
-      { word:'My name is', emoji:'🪪', tip:'Tell people your name: My name is ___!', bonus:null },
-      { word:'Where are you from?', emoji:'🌐', tip:'Ask this to learn about someone\'s country!', bonus:null },
+    id:'jambo', tag:'Slide 1–3 · Intro',
+    name:'Jambo! Meet Tanzania 🌍',
+    icon:'🌍', bg:'linear-gradient(135deg,#1a3a0a,#2575fc)',
+    animal:'👨‍🏫', animalName:'Teacher Tariq — from Tanzania 🇹🇿',
+    animalFact:'"Jambo! I am Teacher Tariq. I flew from Tanzania to Taiwan — about 20 hours in the sky! ✈️ We speak Swahili in Tanzania. Today I will teach you my language and my country!"',
+    hasDrum:false,
+    tf:[
+      {s:'Tanzania is in Africa.',a:true},
+      {s:'It takes about 20 hours to fly from Tanzania to Taiwan.',a:true},
+      {s:'"Jambo" means Goodbye in Swahili.',a:false},
+      {s:'"Asante" means Thank you in Swahili.',a:true},
+      {s:'Tanzania and Taiwan are in the same country.',a:false},
+    ],
+    vocab:[
+      {e:'👋',en:'Jambo',sw:'Hello',say:'JAM-bo',tip:'The first word Teacher Tariq teaches! Say it every morning!',isNew:true},
+      {e:'😊',en:'Asante',sw:'Thank you',say:'ah-SAN-teh',tip:'Say Asante when someone helps you!',isNew:true},
+      {e:'🤗',en:'Karibu',sw:'Welcome',say:'kah-REE-boo',tip:'Teacher Tariq says Karibu to welcome you!',isNew:true},
+      {e:'✈️',en:'20 hours',sw:'20 masaa',say:null,tip:'It takes 20 hours to fly from Tanzania to Taiwan!',isNew:false},
+      {e:'🌍',en:'Tanzania',sw:'Tanzania',say:'tan-zah-NEE-ah',tip:'A beautiful country in East Africa!',isNew:false},
+      {e:'🇹🇿',en:'Flag',sw:'Bendera',say:'ben-DEH-rah',tip:'Tanzania\'s flag has green, black, yellow and blue!',isNew:true},
+      {e:'🟢',en:'Green',sw:'Kijani',say:'kee-JAH-nee',tip:'Green on the flag = land and trees of Tanzania!',isNew:false},
+      {e:'⬛',en:'Black',sw:'Nyeusi',say:'nyeh-OO-see',tip:'Black on the flag = the people of Tanzania!',isNew:false},
+      {e:'🟡',en:'Yellow',sw:'Njano',say:'NJAH-no',tip:'Yellow on the flag = the gold of Tanzania!',isNew:false},
+      {e:'🔵',en:'Blue',sw:'Bluu',say:null,tip:'Blue on the flag = the sea and lakes of Tanzania!',isNew:false},
+      {e:'🛡️',en:'Nembo',sw:'Emblem / Shield',say:'NEM-bo',tip:'The Nembo is Tanzania\'s special shield with a torch and flag!',isNew:true},
+      {e:'💬',en:'Swahili',sw:'Kiswahili',say:'kee-swah-HEE-lee',tip:'The language of Tanzania — and today YOU are learning it!',isNew:true},
     ]
   },
   {
-    id: 'tanzania',
-    name: 'Tanzania Safari 🦒',
-    icon: '🌍',
-    bg: 'linear-gradient(135deg,#f7971e,#ffd200)',
-    animal: '🦒', animalName: 'Geoffrey the Giraffe',
-    animalFact: 'Giraffes are the tallest animals on Earth! They live in Tanzania\'s Serengeti — the most famous wildlife park in the world.',
-    theme: 'Animals & Africa',
-    vocab: [
-      { word:'Lion',       emoji:'🦁', tip:'Lions are the kings of Africa! Tanzania has thousands of lions.', bonus:null },
-      { word:'Elephant',   emoji:'🐘', tip:'Elephants are the biggest animals on land!', bonus:null },
-      { word:'Giraffe',    emoji:'🦒', tip:'Giraffes eat leaves from the TOP of trees!', bonus:null },
-      { word:'Zebra',      emoji:'🦓', tip:'Every zebra has a different stripe pattern — like your fingerprint!', bonus:null },
-      { word:'Monkey',     emoji:'🐒', tip:'Monkeys love to swing from tree to tree!', bonus:null },
-      { word:'Bird',       emoji:'🦜', tip:'Tanzania has over 1,000 kinds of birds!', bonus:null },
-      { word:'Big',        emoji:'🐘', tip:'Elephants are very BIG!', bonus:'Kubwa (Tanzania)' },
-      { word:'Fast',       emoji:'🐆', tip:'Cheetahs are the FASTEST animals on Earth!', bonus:null },
-      { word:'Wild',       emoji:'🌿', tip:'Wild means living free in nature.', bonus:null },
-      { word:'Africa',     emoji:'🌍', tip:'Africa is the second biggest continent in the world!', bonus:null },
-      { word:'Safari',     emoji:'🚙', tip:'Safari means journey in Swahili — it\'s a Tanzanian word!', bonus:'Safari (Tanzania)' },
-      { word:'Amazing',    emoji:'🤩', tip:'Tanzania is an AMAZING country!', bonus:null },
+    id:'pwani', tag:'Slides 5 & 17–18 · Coast',
+    name:'Pwani — By the Sea! 🌊',
+    icon:'🌊', bg:'linear-gradient(135deg,#0077b6,#00b4d8)',
+    animal:'⛵', animalName:'Dhow Boat — Zanzibar Coast',
+    animalFact:'"Pwani means coast in Swahili! Tanzania has a warm blue sea, sunny beaches, and special boats called dhows. We also have the island of Zanzibar — famous for music called Taarab and the sweet smell of cloves!"',
+    hasDrum:false,
+    tf:[
+      {s:'"Pwani" means coast in Swahili.',a:true},
+      {s:'A dhow is a type of Tanzanian boat.',a:true},
+      {s:'Zanzibar is a mountain in Tanzania.',a:false},
+      {s:'Taarab is a type of music from the sea.',a:true},
+      {s:'Cloves smell very sweet.',a:true},
+    ],
+    vocab:[
+      {e:'🌊',en:'Pwani',sw:'Coast',say:'PWAH-nee',tip:'Tanzania has a beautiful warm coast by the Indian Ocean!',isNew:true},
+      {e:'⛵',en:'Dhow',sw:'Jahazi',say:'jah-HAH-zee',tip:'A dhow is a traditional wooden sailing boat from Tanzania!',isNew:true},
+      {e:'🏝️',en:'Zanzibar',sw:'Zanzibar',say:'ZAN-zee-bar',tip:'Zanzibar is a famous island off the coast of Tanzania!',isNew:true},
+      {e:'🎵',en:'Taarab',sw:'Taarab',say:'TAH-rab',tip:'Taarab is beautiful music played by the sea in Tanzania!',isNew:true},
+      {e:'🌿',en:'Cloves',sw:'Karafuu',say:'kah-rah-FOO',tip:'Cloves are a sweet-smelling spice from Zanzibar!',isNew:true},
+      {e:'🏖️',en:'Beach',sw:'Pwani ya mchanga',say:null,tip:'Tanzania\'s beaches have soft white sand!',isNew:false},
+      {e:'☀️',en:'Sunny',say:null,sw:'Jua kali',tip:'Tanzania is warm and sunny all year!',isNew:false},
+      {e:'🌅',en:'Sunset',sw:'Machweo',say:'mah-CHWAY-oh',tip:'Sunsets on the Tanzanian coast are stunning!',isNew:true},
+      {e:'🐟',en:'Fish',sw:'Samaki',say:'sah-MAH-kee',tip:'People at the coast eat lots of fresh fish!',isNew:true},
+      {e:'💙',en:'Blue sea',sw:'Bahari ya samawati',say:null,tip:'The Indian Ocean next to Tanzania is a deep beautiful blue!',isNew:false},
+      {e:'🎧',en:'Listen',sw:'Sikiliza',say:'see-kee-LEE-zah',tip:'When Taarab plays — sit still and listen first!',isNew:true},
+      {e:'🕺',en:'Sway',sw:'Jikunja',say:'jee-KOON-jah',tip:'Then sway your body gently to the Taarab music!',isNew:true},
     ]
   },
   {
-    id: 'kaohsiung',
-    name: 'Kaohsiung City 🏙️',
-    icon: '🇹🇼',
-    bg: 'linear-gradient(135deg,#4facfe,#00f2fe)',
-    animal: '🦢', animalName: 'Black-faced Spoonbill',
-    animalFact: 'The Black-faced Spoonbill is one of the rarest birds in the world! It visits Kaohsiung in winter. Only about 6,000 exist!',
-    theme: 'Colors & City',
-    vocab: [
-      { word:'Red',        emoji:'🔴', tip:'The Dragon Tower at Lotus Pond is red!', bonus:null },
-      { word:'Blue',       emoji:'🔵', tip:'The ocean and sky in Kaohsiung are beautiful blue!', bonus:null },
-      { word:'Green',      emoji:'🟢', tip:'Green trees give us shade in the hot summer!', bonus:null },
-      { word:'Yellow',     emoji:'🟡', tip:'The bright yellow sun makes summer very hot!', bonus:null },
-      { word:'Pink',       emoji:'🩷', tip:'Pink lotus flowers bloom on Lotus Pond!', bonus:null },
-      { word:'Temple',     emoji:'⛩️', tip:'Lotus Pond has a famous Dragon and Tiger Temple!', bonus:null },
-      { word:'Market',     emoji:'🛍️', tip:'Liuhe Night Market has the BEST street food!', bonus:null },
-      { word:'Beach',      emoji:'🏖️', tip:'Cijin Island has a beautiful beach near the city!', bonus:null },
-      { word:'Hot',        emoji:'☀️', tip:'Summer in Kaohsiung is very hot — drink water!', bonus:null },
-      { word:'Delicious',  emoji:'😋', tip:'Say Delicious when food tastes really really good!', bonus:null },
-      { word:'Beautiful',  emoji:'✨', tip:'Kaohsiung is a beautiful city!', bonus:null },
-      { word:'City',       emoji:'🏙️', tip:'Kaohsiung is the second biggest city in Taiwan!', bonus:null },
+    id:'cloth', tag:'Slides 6–10 · Clothes',
+    name:'Beautiful Cloth! 👗',
+    icon:'👗', bg:'linear-gradient(135deg,#e040fb,#ff6e40)',
+    animal:'🦋', animalName:'Kipepeo — Colourful Butterfly 🦋',
+    animalFact:'"Kipepeo means hand fan in Swahili! Women use it with the kanga cloth. Tanzanian cloth is famous for its bright colours and beautiful patterns — just like a butterfly\'s wings!"',
+    hasDrum:false,
+    tf:[
+      {s:'Kanga is a cloth with a message or kind words on it.',a:true},
+      {s:'Kitenge has dull, boring colours.',a:false},
+      {s:'Kikoi is worn by the sea and has stripes.',a:true},
+      {s:'"Kipepeo" means a hand fan.',a:true},
+      {s:'All Tanzanian cloth looks exactly the same.',a:false},
+    ],
+    vocab:[
+      {e:'🧣',en:'Kanga',sw:'Kanga',say:'KAHN-gah',tip:'A kanga is a colourful cloth with a kind message written on it!',isNew:true},
+      {e:'💌',en:'Message',sw:'Ujumbe',say:'oo-JOOM-beh',tip:'Every kanga has a special ujumbe (message) on it!',isNew:true},
+      {e:'👗',en:'Kitenge',sw:'Kitenge',say:'kee-TENG-eh',tip:'Kitenge has bold, bright shapes and colours — very beautiful!',isNew:true},
+      {e:'🧵',en:'Kikoi',sw:'Kikoi',say:'kee-KOY',tip:'Kikoi is a soft cloth with stripes — men wear it by the sea!',isNew:true},
+      {e:'🪭',en:'Kipepeo',sw:'Hand fan',say:'kee-peh-PAY-oh',tip:'Kipepeo means hand fan — used with kanga cloth!',isNew:true},
+      {e:'🌈',en:'Colour',sw:'Rangi',say:'RAHN-gee',tip:'Tanzanian cloth has every colour of the rainbow!',isNew:true},
+      {e:'🔶',en:'Bold pattern',sw:'Mchoro',say:'m-CHOH-roh',tip:'Kitenge has bold mchoro (patterns) with bright shapes!',isNew:true},
+      {e:'〰️',en:'Stripes',sw:'Mistari',say:'mee-STAH-ree',tip:'Kikoi has mistari (stripes) running across the cloth!',isNew:false},
+      {e:'🌀',en:'Wrap',sw:'Funika',say:'foo-NEE-kah',tip:'Women wrap the kanga around their body to wear it!',isNew:false},
+      {e:'👔',en:'Wear',sw:'Vaa',say:'VAH-ah',tip:'Vaa means to wear or put on clothing!',isNew:true},
+      {e:'✨',en:'Beautiful',sw:'Nzuri',say:'NZOO-ree',tip:'All Tanzanian cloth is very nzuri (beautiful)!',isNew:true},
+      {e:'🤝',en:'Friend',sw:'Rafiki',say:'rah-FEE-kee',tip:'Rafiki means friend — a kanga is a gift from a friend!',isNew:true},
     ]
   },
   {
-    id: 'festival',
-    name: 'Festival Fun 🎉',
-    icon: '🎊',
-    bg: 'linear-gradient(135deg,#fa709a,#fee140)',
-    animal: '🥁', animalName: 'Festival Drummer',
-    animalFact: 'Tanzania has amazing festivals with drumming and dancing! Taiwan has beautiful lantern festivals and dragon boat races. Music connects us all!',
-    theme: 'Festivals & Culture',
-    vocab: [
-      { word:'Festival',   emoji:'🎊', tip:'A festival is a big fun celebration!', bonus:null },
-      { word:'Dance',      emoji:'💃', tip:'People dance at festivals all around the world!', bonus:'Ngoma (Tanzania)' },
-      { word:'Music',      emoji:'🎵', tip:'Music makes everyone feel happy!', bonus:null },
-      { word:'Drum',       emoji:'🥁', tip:'Drums are very important in Tanzanian festivals!', bonus:'Ngoma (Tanzania)' },
-      { word:'Sing',       emoji:'🎤', tip:'Sing a song — don\'t be shy!', bonus:null },
-      { word:'Clap',       emoji:'👏', tip:'Clap your hands to the beat!', bonus:null },
-      { word:'Color',      emoji:'🌈', tip:'Festivals are full of bright, beautiful colors!', bonus:null },
-      { word:'Celebrate',  emoji:'🥳', tip:'We celebrate when something special happens!', bonus:null },
-      { word:'Together',   emoji:'🫂', tip:'Festivals bring people TOGETHER!', bonus:null },
-      { word:'Culture',    emoji:'🌍', tip:'Culture is the food, music, and traditions of a country.', bonus:null },
-      { word:'Flag',       emoji:'🚩', tip:'Every country has its own flag. What does yours look like?', bonus:null },
-      { word:'World',      emoji:'🌐', tip:'Our world has over 190 different countries!', bonus:null },
+    id:'art', tag:'Slides 11–15 · Art & Crafts',
+    name:'Art & Crafts! 🎨',
+    icon:'🎨', bg:'linear-gradient(135deg,#ff9800,#e53935)',
+    animal:'🦒', animalName:'Tinga Tinga Giraffe 🎨',
+    animalFact:'"Tinga Tinga paintings show bright, happy animals! They started in Tanzania and are now famous all over the world. We also make beautiful carved doors (mlango), woven mats (mkeka), baskets (kikapu), and bead bracelets (shanga)!"',
+    hasDrum:false,
+    tf:[
+      {s:'Tinga Tinga paintings show bright, colourful animals.',a:true},
+      {s:'"Mlango" means a basket in Swahili.',a:false},
+      {s:'A mkeka is a mat that people sit on to eat and talk.',a:true},
+      {s:'"Shanga" means tiny bright beads.',a:true},
+      {s:'A kikapu is used to carry fruit and fish.',a:true},
+    ],
+    vocab:[
+      {e:'🦒',en:'Tinga Tinga',sw:'Tinga Tinga',say:'ting-ah TING-ah',tip:'Bright animal paintings from Tanzania — look at all the happy animals!',isNew:true},
+      {e:'🚪',en:'Mlango',sw:'Door',say:'m-LAHN-go',tip:'Tanzania\'s big carved wooden doors are famous for their beauty!',isNew:true},
+      {e:'🛖',en:'Mkeka',sw:'Mat',say:'m-KEH-kah',tip:'A mkeka is a woven mat — we sit on it to eat and talk together!',isNew:true},
+      {e:'🧺',en:'Kikapu',sw:'Basket',say:'kee-KAH-poo',tip:'A kikapu is a woven basket used to carry fruit and fish!',isNew:true},
+      {e:'📿',en:'Shanga',sw:'Beads',say:'SHAHN-gah',tip:'Shanga are tiny bright beads — a bracelet means we are friends!',isNew:true},
+      {e:'🌈',en:'Bright',sw:'Rangi angavu',say:null,tip:'Tinga Tinga uses the brightest, happiest colours!',isNew:false},
+      {e:'🔨',en:'Carve',sw:'Chonga',say:'CHOHN-gah',tip:'Tanzania\'s doors are carved by hand with beautiful shapes!',isNew:true},
+      {e:'🧶',en:'Weave',sw:'Fuma',say:'FOO-mah',tip:'The mkeka and kikapu are made by weaving — crossing threads!',isNew:true},
+      {e:'🖌️',en:'Paint',sw:'Paka rangi',say:null,tip:'Paka rangi means to paint — just like Tinga Tinga artists!',isNew:false},
+      {e:'🧘',en:'Sit',sw:'Kaa',say:'KAH-ah',tip:'Kaa means sit — we sit on the mkeka to eat!',isNew:true},
+      {e:'🏋️',en:'Carry',sw:'Beba',say:'BEH-bah',tip:'We beba (carry) fruit and fish in the kikapu basket!',isNew:true},
+      {e:'🤝',en:'Bracelet = Friends',sw:'Shanga = Urafiki',say:null,tip:'A shanga bracelet says: we are friends! (urafiki = friendship)',isNew:true},
     ]
   },
   {
-    id: 'daily',
-    name: 'My Daily Life 🏠',
-    icon: '🌞',
-    bg: 'linear-gradient(135deg,#a18cd1,#fbc2eb)',
-    animal: '🐈', animalName: 'Lucky the Camp Cat',
-    animalFact: 'Taiwan is famous for friendly stray cats! Lucky lives near the school and loves to watch the kids eat their lunch.',
-    theme: 'Everyday Words',
-    vocab: [
-      { word:'Wake up',    emoji:'⏰', tip:'Wake up early — camp starts at 9:00!', bonus:null },
-      { word:'Eat',        emoji:'🍱', tip:'We eat lunch together at camp!', bonus:'Kula (Tanzania)' },
-      { word:'Drink',      emoji:'💧', tip:'Drink water — it is very hot in summer!', bonus:'Kunywa (Tanzania)' },
-      { word:'Study',      emoji:'📚', tip:'We study English together at camp!', bonus:null },
-      { word:'Play',       emoji:'⚽', tip:'Playing is the best part of camp!', bonus:null },
-      { word:'Sleep',      emoji:'😴', tip:'We rest at lunchtime — quiet please!', bonus:'Kulala (Tanzania)' },
-      { word:'Walk',       emoji:'🚶', tip:'Walk — don\'t run — in the classroom!', bonus:null },
-      { word:'Listen',     emoji:'👂', tip:'"Listen to me!" — your teacher\'s favourite phrase!', bonus:null },
-      { word:'Line up',    emoji:'🚶🚶', tip:'"Line up!" means stand in a straight line.', bonus:null },
-      { word:'Sit down',   emoji:'🪑', tip:'"Sit down please" — be polite when asking!', bonus:null },
-      { word:'Help',       emoji:'🤗', tip:'Always help your friends!', bonus:'Saidia (Tanzania)' },
-      { word:'Good job',   emoji:'🏆', tip:'Say "Good job!" to cheer for your friends!', bonus:null },
+    id:'ngoma', tag:'Slides 16–17 · Music',
+    name:'Ngoma! Drums & Dance! 🥁',
+    icon:'🥁', bg:'linear-gradient(135deg,#1a7a2e,#ffd200)',
+    animal:'🥁', animalName:'Ngoma — the Great Tanzania Drum',
+    animalFact:'"Ngoma means drum in Swahili! We hit the drum and we dance — BOOM-BOOM-BOOM! 🥁 Tanzania also has beautiful Taarab music from Zanzibar. First sit still and listen, then sway and tap to the music!"',
+    hasDrum:true,
+    tf:[
+      {s:'"Ngoma" means drum in Swahili.',a:true},
+      {s:'You should run around when Taarab music plays.',a:false},
+      {s:'Taarab music comes from Zanzibar.',a:true},
+      {s:'When you hit a drum it makes a BOOM sound.',a:true},
+      {s:'"Cheza" means to dance in Swahili.',a:true},
+    ],
+    vocab:[
+      {e:'🥁',en:'Ngoma',sw:'Drum',say:'n-GOH-mah',tip:'We hit the ngoma (drum) and we dance — BOOM BOOM BOOM!',isNew:true},
+      {e:'💥',en:'BOOM!',sw:'Bomu!',say:null,tip:'The sound a drum makes — say it loud: BOOM!',isNew:false},
+      {e:'💃',en:'Cheza',sw:'Dance',say:'CHAY-zah',tip:'Cheza means dance — move your whole body!',isNew:true},
+      {e:'👏',en:'Piga makofi',sw:'Clap',say:'PEE-gah mah-KOH-fee',tip:'Piga makofi means clap your hands to the beat!',isNew:true},
+      {e:'🎵',en:'Taarab',sw:'Taarab music',say:'TAH-rab',tip:'Beautiful music from Zanzibar, played by the sea!',isNew:true},
+      {e:'🕺',en:'Jikunja',sw:'Sway',say:'jee-KOON-jah',tip:'Sway your body slowly to Taarab music!',isNew:true},
+      {e:'⚡',en:'Haraka',sw:'Fast',say:'hah-RAH-kah',tip:'Haraka means fast — some drum beats are very fast!',isNew:true},
+      {e:'🐢',en:'Polepole',sw:'Slow / calm',say:'POH-leh POH-leh',tip:'Polepole means slow — Taarab music is calm and slow!',isNew:true},
+      {e:'🎭',en:'Perform',sw:'Onyesha',say:'oh-NYEH-shah',tip:'Onyesha means perform — show your talent on stage!',isNew:true},
+      {e:'👂',en:'Sikiliza',sw:'Listen',say:'see-kee-LEE-zah',tip:'First sikiliza (listen) carefully to the beat!',isNew:true},
+      {e:'😁',en:'Furaha',sw:'Fun / Joy',say:'foo-RAH-hah',tip:'Furaha means fun and joy — that\'s what music brings!',isNew:true},
+      {e:'🙏',en:'Asante sana',sw:'Thank you so much',say:'ah-SAN-teh SAH-nah',tip:'Teacher Tariq says Asante sana at the end — thank you so much!',isNew:true},
     ]
   }
 ];
 
-const QUICK_PROMPTS = [
-  'What is this word in Swahili?',
-  'Give me a fun example!',
-  'Tell me about Tanzania!',
-  'Teach me an animal word!',
-  'Quiz me on what I learned!'
-];
+const CHAT_CHIPS=['What does ___ mean in Swahili?','Tell me more about Tanzania!','How do I say ___ in Swahili?','What is Tinga Tinga?','What does Teacher Tariq eat?','Teach me a fun word!'];
 
-let state = { stars: {}, quiz: null, chatHistory: {}, loc: null };
-
-window.onload = () => {
-  try { const s = localStorage.getItem('ks_camp'); if(s) state = {...state, ...JSON.parse(s)}; } catch(e){}
-  detectModel();
-  renderMap();
+/* ══ STATE ══ */
+let G={stars:{},quiz:null,chat:{},loc:null};
+window.onload=()=>{
+  try{const s=localStorage.getItem('tariq2025');if(s)G={...G,...JSON.parse(s)}}catch(e){}
+  detectModel(); renderMap();
 };
+function save(){try{localStorage.setItem('tariq2025',JSON.stringify(G))}catch(e){}}
+function totalStars(){return Object.values(G.stars).reduce((a,b)=>a+b,0)}
+function updBadges(){const t=totalStars();document.getElementById('sw-st').textContent=t;document.getElementById('sm-st').textContent=t}
 
-function save() {
-  try { localStorage.setItem('ks_camp', JSON.stringify(state)); } catch(e) {}
+async function detectModel(){
+  try{const r=await fetch(`${API_BASE}/models`,{headers:{Authorization:`Bearer ${API_KEY}`}});
+  if(r.ok){const d=await r.json();const l=d.data||d.models||[];if(l.length)AI_MODEL=l[0].id||l[0].name||AI_MODEL}}catch(e){}
 }
 
-async function detectModel() {
-  try {
-    const r = await fetch(`${API_BASE}/models`, { headers:{ Authorization:`Bearer ${API_KEY}` } });
-    if (r.ok) {
-      const d = await r.json();
-      const list = d.data || d.models || [];
-      if (list.length > 0) AI_MODEL = list[0].id || list[0].name || AI_MODEL;
-    }
-  } catch(e) {}
-}
+/* ══ NAV ══ */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');updBadges()}
+function showMap(){renderMap();showScreen('sm')}
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  updateStars();
-}
-
-function totalStars() { return Object.values(state.stars).reduce((a,b)=>a+b,0); }
-
-function updateStars() {
-  const t = totalStars();
-  document.getElementById('stars-welcome').textContent = t;
-  document.getElementById('stars-map').textContent = t;
-}
-
-function showMap() { renderMap(); showScreen('screen-map'); }
-
-function renderMap() {
-  const g = document.getElementById('map-grid');
-  g.innerHTML = '';
-  LOCATIONS.forEach(loc => {
-    const s = state.stars[loc.id] || 0;
-    const d = document.createElement('div');
-    d.className = 'loc-card' + (s > 0 ? ' done' : '');
-    d.style.background = loc.bg;
-    d.innerHTML = `
-      <div class="loc-icon">${loc.icon}</div>
-      <div class="loc-name">${loc.name}</div>
-      <div class="loc-theme">${loc.theme}</div>
-      <div class="loc-stars-count">${s > 0 ? '⭐'.repeat(Math.min(s,12)) : ''}</div>
-      <div class="loc-animal">${loc.animal}</div>`;
-    d.onclick = () => openLoc(loc.id);
-    g.appendChild(d);
+function renderMap(){
+  const g=document.getElementById('mgrid');g.innerHTML='';
+  SECS.forEach(s=>{
+    const st=G.stars[s.id]||0;
+    const d=document.createElement('div');d.className='mc'+(st>0?' done':'');d.style.background=s.bg;
+    d.innerHTML=`<div class="mc-tag">${s.tag}</div><div class="mc-icon">${s.icon}</div><div class="mc-name">${s.name}</div><div class="mc-sub">${s.vocab.length} Swahili words${s.hasDrum?' + 🥁 Drum Game':''}</div><div class="mc-st">${st>0?'⭐'.repeat(Math.min(st,10)):''}</div><div class="mc-anm">${s.animal}</div>`;
+    d.onclick=()=>openSec(s.id);g.appendChild(d);
   });
 }
 
-function openLoc(id) {
-  const loc = LOCATIONS.find(l => l.id === id);
-  state.loc = id;
-
-  document.getElementById('loc-header').style.background = loc.bg.replace('linear-gradient','linear-gradient');
-  document.getElementById('loc-title').textContent = loc.name;
-  document.getElementById('a-emoji').textContent = loc.animal;
-  document.getElementById('a-name').textContent = loc.animalName;
-  document.getElementById('a-fact').textContent = loc.animalFact;
-  document.getElementById('loc-star-count').textContent = (state.stars[id] || 0) + ' ⭐';
-
-  renderVocab(loc);
-  startQuiz(loc);
-  initChat(loc);
-  switchTab('vocab');
-  showScreen('screen-location');
-  window.scrollTo(0,0);
+function openSec(id){
+  const sec=SECS.find(s=>s.id===id);G.loc=id;
+  document.getElementById('lhdr').style.background=sec.bg;
+  document.getElementById('ltitle').textContent=sec.name;
+  document.getElementById('ae').textContent=sec.animal;
+  document.getElementById('an').textContent=sec.animalName;
+  document.getElementById('af').textContent=sec.animalFact;
+  document.getElementById('lsc').textContent=(G.stars[id]||0)+' ⭐';
+  // show/hide drum tab
+  document.getElementById('tab-d').style.display=sec.hasDrum?'':'none';
+  renderVocab(sec); buildQuiz(sec); if(sec.hasDrum)buildDrumTab(sec); initChat(sec);
+  switchTab('v'); showScreen('sl'); window.scrollTo(0,0);
 }
 
-// ── VOCAB ─────────────────────────────────────────────────────────
-function renderVocab(loc) {
-  const g = document.getElementById('vocab-grid');
-  g.innerHTML = '';
-  loc.vocab.forEach(v => {
-    const c = document.createElement('div');
-    c.className = 'v-card';
-    c.innerHTML = `
-      <div class="cf">
-        <div class="v-emoji">${v.emoji}</div>
-        <div class="v-word">${v.word}</div>
-      </div>
-      <div class="cb">
-        <div class="v-emoji">${v.emoji}</div>
-        <div class="v-word">${v.word}</div>
-        <div class="v-tip">${v.tip}</div>
-        ${v.bonus ? `<div class="v-swahili">🇹🇿 ${v.bonus}</div>` : ''}
-      </div>`;
-    c.onclick = () => c.classList.toggle('flipped');
-    g.appendChild(c);
+/* ══ VOCAB ══ */
+function renderVocab(sec){
+  const g=document.getElementById('vgrid');g.innerHTML='';
+  sec.vocab.forEach(v=>{
+    const c=document.createElement('div');c.className='vc';
+    c.innerHTML=`
+      ${v.isNew?'<div class="vnew">NEW!</div>':''}
+      <div class="cf"><div class="ve">${v.e}</div><div class="ven">${v.en}</div>${v.say?`<div class="vsay">Say: "${v.say}"</div>`:''}</div>
+      <div class="cb"><div class="ve">${v.e}</div><div class="vsw">${v.sw}</div><div class="ven">${v.en}</div>${v.say?`<div class="vsay">"${v.say}"</div>`:''}<div class="vt">${v.tip}</div></div>`;
+    c.onclick=()=>c.classList.toggle('flip');g.appendChild(c);
   });
 }
 
-// ── QUIZ ──────────────────────────────────────────────────────────
-function startQuiz(loc) {
-  const shuffled = [...loc.vocab].sort(() => Math.random()-0.5);
-  const questions = shuffled.slice(0,10).map(v => {
-    const wrongs = loc.vocab.filter(x=>x.word!==v.word).sort(()=>Math.random()-0.5).slice(0,2);
-    const choices = [v.word, ...wrongs.map(w=>w.word)].sort(()=>Math.random()-0.5);
-    return { emoji:v.emoji, correct:v.word, choices };
+/* ══ QUIZ ══ */
+function buildQuiz(sec){
+  const vocab=[...sec.vocab].sort(()=>Math.random()-.5);
+  const tf=[...sec.tf].sort(()=>Math.random()-.5);
+  const qs=[];
+
+  // 3 × Swahili→English (what does this Swahili word mean?)
+  vocab.slice(0,3).forEach(v=>{
+    const wrongs=sec.vocab.filter(x=>x.en!==v.en).sort(()=>Math.random()-.5).slice(0,3);
+    qs.push({type:'sw',q:`What does "${v.en}" mean?`,emoji:v.e,correct:v.sw,choices:[v.sw,...wrongs.map(w=>w.sw)].sort(()=>Math.random()-.5)});
   });
-  state.quiz = { loc, questions, index:0, score:0, answered:false };
-  renderQuestion();
+  // 3 × True/False
+  tf.slice(0,3).forEach(t=>qs.push({type:'tf',stmt:t.s,correct:t.a}));
+  // 2 × Emoji Match (show emoji, pick English word)
+  vocab.slice(3,5).forEach(v=>{
+    const wrongs=sec.vocab.filter(x=>x.en!==v.en).sort(()=>Math.random()-.5).slice(0,3);
+    qs.push({type:'pick',q:'What does this emoji mean?',emoji:v.e,correct:v.en,choices:[v.en,...wrongs.map(w=>w.en)].sort(()=>Math.random()-.5)});
+  });
+  // 2 × Match emoji (show Swahili, pick emoji)
+  vocab.slice(5,7).forEach(v=>{
+    const wrongs=sec.vocab.filter(x=>x.e!==v.e).sort(()=>Math.random()-.5).slice(0,3);
+    qs.push({type:'match',q:`Which emoji matches "${v.en}" (${v.sw})?`,correct:v.e,choices:[v.e,...wrongs.map(w=>w.e)].sort(()=>Math.random()-.5)});
+  });
+
+  qs.sort(()=>Math.random()-.5);
+  G.quiz={sec,qs,idx:0,score:0,streak:0,answered:false};
+  renderQ('qshell');
 }
 
-function renderQuestion() {
-  const q = state.quiz;
-  const box = document.getElementById('quiz-wrap');
-  if (q.index >= q.questions.length) { showResult(q); return; }
-  const cur = q.questions[q.index];
-  box.innerHTML = `
-    <div class="q-prog">Question ${q.index+1} of ${q.questions.length} &nbsp;|&nbsp; Score: ${q.score} ⭐</div>
-    <div class="q-question">What is this?</div>
-    <div class="q-emoji">${cur.emoji}</div>
-    <div class="q-choices">
-      ${cur.choices.map(c=>`<button class="c-btn" onclick="answer('${c.replace(/'/g,"\\'")}')"> ${c}</button>`).join('')}
-    </div>
-    <div class="q-feedback" id="q-fb"></div>
-    <button class="next-btn" id="q-next" style="display:none" onclick="nextQ()">Next ➤</button>`;
-}
+function renderQ(shellId){
+  const qz=G.quiz,box=document.getElementById(shellId||'qshell');
+  if(qz.idx>=qz.qs.length){showResult(qz,shellId);return}
+  const q=qz.qs[qz.idx],pct=Math.round((qz.idx/qz.qs.length)*100);
+  const strkHTML=qz.streak>=2?`<span class="qstreak">${'🔥'.repeat(Math.min(qz.streak,5))} ${qz.streak}×!</span>`:'';
 
-function answer(choice) {
-  const q = state.quiz;
-  if (q.answered) return;
-  q.answered = true;
-  const cur = q.questions[q.index];
-  const fb = document.getElementById('q-fb');
-  document.querySelectorAll('.c-btn').forEach(b => {
-    b.disabled = true;
-    if (b.textContent.trim() === cur.correct) b.classList.add('correct');
-    else if (b.textContent.trim() === choice && choice !== cur.correct) b.classList.add('wrong');
-  });
-  if (choice === cur.correct) {
-    q.score++;
-    fb.className = 'q-feedback ok';
-    fb.textContent = ['Correct! ⭐','Great job! 🌟','Amazing! 🏆','You got it! 🎉','Excellent! 👏'][Math.floor(Math.random()*5)];
-  } else {
-    fb.className = 'q-feedback no';
-    fb.textContent = `Not quite! The answer is "${cur.correct}" 😊 Try to remember it!`;
+  let body='';
+  if(q.type==='sw'){
+    body=`<div class="qbadge b-swahili">🇹🇿 Swahili Word</div><div class="qq">${q.q}</div><div class="qemoji">${q.emoji}</div><div class="sw4">${q.choices.map(c=>`<button class="swb" onclick="ans('${esc(c)}','${shellId||'qshell'}')">${c}</button>`).join('')}</div>`;
+  }else if(q.type==='tf'){
+    body=`<div class="qbadge b-tf">✅ True or False?</div><div class="qq">"${q.stmt}"</div><div class="tf2"><button class="tfb tfy" onclick="ans('true','${shellId||'qshell'}')">✅ TRUE</button><button class="tfb tfn" onclick="ans('false','${shellId||'qshell'}')">❌ FALSE</button></div>`;
+  }else if(q.type==='pick'){
+    body=`<div class="qbadge b-tf">🎯 Emoji Match</div><div class="qq">${q.q}</div><div class="qemoji">${q.emoji}</div><div class="pick4">${q.choices.map(c=>`<button class="pb" onclick="ans('${esc(c)}','${shellId||'qshell'}')">${c}</button>`).join('')}</div>`;
+  }else{
+    body=`<div class="qbadge b-match">🎨 Emoji Hunt</div><div class="qq">${q.q}</div><div class="match4">${q.choices.map(c=>`<button class="mb" onclick="ans('${esc(c)}','${shellId||'qshell'}')">${c}</button>`).join('')}</div>`;
   }
-  document.getElementById('q-next').style.display = 'block';
+
+  box.innerHTML=`
+    <div class="qbar-wrap"><div class="qbar" style="width:${pct}%"></div></div>
+    <div class="qhdr">${strkHTML}<span class="qscr" style="margin-left:auto">⭐ ${qz.score}/${qz.qs.length}</span></div>
+    ${body}
+    <div class="qfb" id="qfb-${shellId||'qshell'}"></div>
+    <button class="nxt" id="qnxt-${shellId||'qshell'}" style="display:none" onclick="nextQ('${shellId||'qshell'}')">Next ➤</button>`;
 }
 
-function nextQ() {
-  state.quiz.index++;
-  state.quiz.answered = false;
-  renderQuestion();
+function esc(s){return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+
+function ans(val,sid){
+  const qz=G.quiz;if(qz.answered)return;qz.answered=true;
+  const q=qz.qs[qz.idx];
+  const ok=String(q.correct)===val||(q.type==='tf'&&((val==='true')===q.correct));
+  const fb=document.getElementById(`qfb-${sid}`);
+
+  document.querySelectorAll(`#${sid} .pb,#${sid} .tfb,#${sid} .mb,#${sid} .swb`).forEach(b=>{
+    b.disabled=true;
+    const bv=(b.getAttribute('onclick')||'').match(/ans\('([^']+)'/)?.[1];
+    if(!bv)return;
+    const bOk=String(q.correct)===bv||(q.type==='tf'&&((bv==='true')===q.correct));
+    if(bOk)b.classList.add('ok');else if(bv===val)b.classList.add('no');
+  });
+
+  if(ok){
+    qz.score++;qz.streak++;
+    sound('ok');confetti();
+    const m=['Correct! ⭐','Nzuri sana! 🌟','Excellent! 🏆','You got it! 🎉','Vizuri! 👏'];
+    fb.className='qfb ok';
+    fb.textContent=qz.streak>=3?`🔥 ${qz.streak} in a row! `+m[Math.floor(Math.random()*m.length)]:m[Math.floor(Math.random()*m.length)];
+  }else{
+    qz.streak=0;sound('no');
+    const lbl=q.type==='tf'?(q.correct?'TRUE ✅':'FALSE ❌'):q.correct;
+    fb.className='qfb no';
+    fb.innerHTML=`Not quite! Answer: <b>${lbl}</b> 😊 Try again!`;
+  }
+  document.getElementById(`qnxt-${sid}`).style.display='block';
 }
 
-function showResult(q) {
-  const s = q.score;
-  const prev = state.stars[q.loc.id] || 0;
-  if (s > prev) { state.stars[q.loc.id] = s; save(); }
-  document.getElementById('loc-star-count').textContent = (state.stars[q.loc.id]||0) + ' ⭐';
-  updateStars();
+function nextQ(sid){G.quiz.idx++;G.quiz.answered=false;renderQ(sid)}
 
-  const msgs = ['Keep trying — you can do it!','Good effort!','Well done!','Great job!','Excellent!','Amazing!','PERFECT! 🏆','PERFECT! 🏆','PERFECT! 🏆','PERFECT! 🏆','PERFECT! 🏆'];
-  document.getElementById('quiz-wrap').innerHTML = `
-    <div class="quiz-result">
-      <div style="font-size:1rem; color:#888; margin-bottom:0.4rem">Quiz Complete!</div>
-      <div class="result-stars">${s > 0 ? '⭐'.repeat(s) : '😊'}</div>
-      <div class="result-msg">${msgs[Math.min(s,10)]} — ${s}/10 correct!</div>
-      <div class="result-sub">You studied ${q.loc.theme} words!</div>
-      <button class="next-btn" style="margin-top:1.2rem" onclick="startQuiz(LOCATIONS.find(l=>l.id==='${q.loc.id}'))">🔄 Try Again</button>
+function showResult(qz,sid){
+  const s=qz.score,tot=qz.qs.length,pct=Math.round(s/tot*100);
+  const prev=G.stars[qz.sec.id]||0;
+  if(s>prev){G.stars[qz.sec.id]=s;save()}
+  document.getElementById('lsc').textContent=(G.stars[qz.sec.id]||0)+' ⭐';updBadges();
+  let gc,gn,msg;
+  if(pct>=90){gc='ga';gn='A+ 🏆';msg='OUTSTANDING! Teacher Tariq is SO proud of you! 🇹🇿'}
+  else if(pct>=75){gc='gb';gn='B+ 🌟';msg='Great work! You are learning Swahili fast!'}
+  else if(pct>=55){gc='gc';gn='C+ 😊';msg='Good effort! Flip the word cards and try again!'}
+  else{gc='gd';gn='Try again!';msg='Don\'t give up! Review the words first, then retry! 💪'}
+  document.getElementById(sid||'qshell').innerHTML=`
+    <div class="qres">
+      <div class="gcircle ${gc}"><div class="gn">${s}/${tot}</div><div class="gl">${gn}</div></div>
+      <div class="rstars">${'⭐'.repeat(Math.min(s,10))}</div>
+      <div class="rmsg">${msg}</div>
+      <div class="rsub">Score: ${pct}% · Asante for playing! 🇹🇿</div>
+      <button class="nxt" style="margin-top:1rem" onclick="buildQuiz(SECS.find(s=>s.id==='${qz.sec.id}'))">🔄 Try Again</button>
     </div>`;
-
-  if (totalStars() >= 45) setTimeout(showVictory, 800);
+  if(totalStars()>=35)setTimeout(()=>{confetti(4000);setTimeout(()=>showScreen('sv'),500)},600);
 }
 
-// ── CHAT ──────────────────────────────────────────────────────────
-function initChat(loc) {
-  const box = document.getElementById('chat-msgs');
-  box.innerHTML = '';
-  if (!state.chatHistory[loc.id]) state.chatHistory[loc.id] = [];
-
-  if (state.chatHistory[loc.id].length === 0) {
-    addMsg('simba', `Jambo! 🦁 That means Hello in Swahili — my language from Tanzania! I am Simba. Today we are learning about <b>${loc.theme}</b>. Can you say Hello to me in English? 😊`);
-  } else {
-    state.chatHistory[loc.id].forEach(m => addMsg(m.role, m.text, false));
-  }
-
-  const qr = document.getElementById('quick-row');
-  qr.innerHTML = '';
-  QUICK_PROMPTS.forEach(p => {
-    const b = document.createElement('button');
-    b.className = 'q-chip'; b.textContent = p;
-    b.onclick = () => { document.getElementById('chat-input').value = p; sendChat(); };
-    qr.appendChild(b);
+/* ══ DRUM GAME ══ */
+let drumCount=0,drumTimer=null,drumPattern='',drumPatterns=['BOOM-boom-BOOM','boom-BOOM-BOOM','BOOM-BOOM-boom','boom-BOOM-boom'];
+function buildDrumTab(sec){
+  drumCount=0;drumPattern='';
+  document.getElementById('drum-count').textContent='0';
+  document.getElementById('drum-pattern').textContent='';
+  document.getElementById('drum-msg').textContent='Press the drum and make some noise!';
+  // also build a short 5-question ngoma quiz in that tab
+  const vocab=[...sec.vocab].filter(v=>['Ngoma','Cheza','Haraka','Polepole','Furaha'].includes(v.en)).slice(0,4);
+  const extraQ=vocab.map(v=>{
+    const wrongs=sec.vocab.filter(x=>x.en!==v.en).sort(()=>Math.random()-.5).slice(0,3);
+    return{type:'sw',q:`What does "${v.en}" mean?`,emoji:v.e,correct:v.sw,choices:[v.sw,...wrongs.map(w=>w.sw)].sort(()=>Math.random()-.5)};
   });
-
-  document.getElementById('chat-input').onkeydown = e => { if(e.key==='Enter') sendChat(); };
-}
-
-function addMsg(role, text, save2=true) {
-  const box = document.getElementById('chat-msgs');
-  const d = document.createElement('div');
-  d.className = `msg ${role}`;
-  d.innerHTML = text;
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-  if (save2 && state.loc) {
-    if (!state.chatHistory[state.loc]) state.chatHistory[state.loc] = [];
-    state.chatHistory[state.loc].push({role, text});
-    if (state.chatHistory[state.loc].length > 30)
-      state.chatHistory[state.loc] = state.chatHistory[state.loc].slice(-30);
+  if(extraQ.length){
+    G.quiz={sec,qs:[...extraQ,...sec.tf.slice(0,1).map(t=>({type:'tf',stmt:t.s,correct:t.a}))],idx:0,score:0,streak:0,answered:false};
+    renderQ('drum-quiz');
   }
 }
+function hitDrum(){
+  drumCount++;sound('drum');
+  const btn=document.getElementById('drum-btn');
+  btn.classList.add('hit');setTimeout(()=>btn.classList.remove('hit'),150);
+  document.getElementById('drum-count').textContent=drumCount;
+  drumPattern=(drumPattern+'BOOM ').trim();
+  if(drumPattern.split(' ').length>6)drumPattern=drumPattern.split(' ').slice(-6).join(' ');
+  document.getElementById('drum-pattern').textContent=drumPattern+'...';
+  const msgs=['Keep going! 🥁','LOUDER! 💥','You are a drummer! 🎵','BOOM BOOM BOOM! 🔥','AMAZING! 🏆'];
+  if(drumCount%5===0)document.getElementById('drum-msg').textContent=msgs[Math.min(Math.floor(drumCount/5)-1,msgs.length-1)];
+  if(drumTimer)clearTimeout(drumTimer);
+  drumTimer=setTimeout(()=>{document.getElementById('drum-msg').textContent=`You hit the drum ${drumCount} times! Asante! 🎉`;drumPattern='';document.getElementById('drum-pattern').textContent=''},2500);
+}
 
-async function sendChat() {
-  const inp = document.getElementById('chat-input');
-  const btn = document.getElementById('send-btn');
-  const text = inp.value.trim();
-  if (!text) return;
-  inp.value = ''; btn.disabled = true;
-  addMsg('user', text);
+/* ══ CHAT ══ */
+const OPENERS={
+  jambo:'Jambo! 👋 That means Hello! I am Teacher Tariq from Tanzania 🇹🇿. I am so happy to be at your summer camp! Do you know how long it took me to fly from Tanzania to Taiwan? Ask me!',
+  pwani:'Habari! 🌊 Have you ever seen the sea? In Tanzania we have pwani — the coast! Beautiful blue water, dhow boats, and Zanzibar island. What do you want to know about my coast?',
+  cloth:'Look at this! 👗 In Tanzania we love colourful cloth! Kanga has a message, kitenge has bold patterns, and kikoi has stripes. Which one do you like most? Tell me!',
+  art:'Tinga Tinga! 🦒🎨 Bright and happy animal paintings — that is Tanzania\'s famous art! We also weave baskets (kikapu) and make bead bracelets (shanga). Do you want to learn more?',
+  ngoma:'BOOM BOOM BOOM! 🥁 That is the ngoma — our Tanzanian drum! When we play ngoma, everyone wants to cheza (dance)! Can you say "NGOMA" for me? Say it loud!'
+};
+function initChat(sec){
+  const box=document.getElementById('cmsgs');box.innerHTML='';
+  if(!G.chat[sec.id])G.chat[sec.id]=[];
+  if(!G.chat[sec.id].length)addMsg('t',OPENERS[sec.id]||'Jambo! What do you want to know about Tanzania? 🌍');
+  else G.chat[sec.id].forEach(m=>addMsg(m.r,m.t,false));
+  const cr=document.getElementById('chips');cr.innerHTML='';
+  CHAT_CHIPS.forEach(p=>{const b=document.createElement('button');b.className='chip';b.textContent=p;b.onclick=()=>{document.getElementById('cinput').value=p;sendChat()};cr.appendChild(b)});
+  document.getElementById('cinput').onkeydown=e=>{if(e.key==='Enter')sendChat()};
+}
+function addMsg(role,text,sv=true){
+  const box=document.getElementById('cmsgs');
+  const d=document.createElement('div');d.className=`cmsg ${role}`;d.innerHTML=text;
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+  if(sv&&G.loc){if(!G.chat[G.loc])G.chat[G.loc]=[];G.chat[G.loc].push({r:role,t:text});if(G.chat[G.loc].length>30)G.chat[G.loc]=G.chat[G.loc].slice(-30)}
+}
+async function sendChat(){
+  const inp=document.getElementById('cinput'),btn=document.getElementById('csend');
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';btn.disabled=true;addMsg('u',txt);
+  const sec=SECS.find(s=>s.id===G.loc);
+  const typing=document.createElement('div');typing.className='cmsg typing';typing.textContent='Teacher Tariq is thinking... ✈️';
+  document.getElementById('cmsgs').appendChild(typing);document.getElementById('cmsgs').scrollTop=9999;
 
-  const loc = LOCATIONS.find(l => l.id === state.loc);
-  const vocabList = loc ? loc.vocab.map(v => v.word).join(', ') : '';
+  const swWords=sec.vocab.map(v=>`${v.en}=${v.sw}`).join(', ');
+  const sys=`You are Teacher Tariq (Twaariq Mohamed Yahya), a friendly young university student from Tanzania who is a camp leader at Kaohsiung Summer Camp (鼓岩國小, Taiwan). You just gave a presentation about Tanzania to elementary school kids ages 6-12.
 
-  const typing = document.createElement('div');
-  typing.className = 'msg typing'; typing.textContent = 'Simba is thinking... 🐾';
-  document.getElementById('chat-msgs').appendChild(typing);
-  document.getElementById('chat-msgs').scrollTop = 9999;
+YOUR PRESENTATION COVERED:
+- Swahili greetings: Jambo=Hello, Asante=Thank you, Karibu=Welcome, Asante sana=Thank you very much
+- Tanzania flag: Green=land/trees, Black=people, Yellow=gold, Blue=sea/lakes; Nembo=the emblem/shield
+- Coast (Pwani): warm blue sea, dhow boats, Zanzibar island, Taarab music, cloves
+- Tanzanian cloth: Kanga (cloth with a message), Kitenge (bright bold patterns), Kikoi (striped, worn by sea), Kipepeo=hand fan
+- Art & crafts: Tinga Tinga paintings (bright animal art), Mlango=big carved door, Mkeka=woven mat, Kikapu=basket, Shanga=beads/bracelets
+- Music: Ngoma=drum, BOOM-BOOM-BOOM, Cheza=dance, Taarab=music from Zanzibar, first listen then sway
+- Today's Swahili words for this section: ${swWords}
 
-  const system = `You are Simba, a friendly lion cub from Tanzania, East Africa! You are at Kaohsiung Summer Camp helping Taiwanese elementary school children (ages 6-12) learn English.
+RULES:
+1. VERY simple English only — Grade 1-3 level, short sentences
+2. Max 3 short sentences per reply
+3. Use emojis in every message 🦁🌍🇹🇿
+4. Teach ONE Swahili word each reply when natural
+5. Gently correct English mistakes, then show the right version
+6. End EVERY reply with one simple question
+7. Be warm, funny, excited — you LOVE talking about Tanzania!
+8. Never use difficult vocabulary`;
 
-Your home: Tanzania 🇹🇿 — famous for lions, elephants, giraffes, Mount Kilimanjaro, and the Serengeti safari park.
-Their camp is in: Kaohsiung, Taiwan 🇹🇼
-Today's English theme: ${loc?.theme || 'English'}
-Today's vocabulary words: ${vocabList}
+  const hist=(G.chat[G.loc]||[]).slice(-8).map(m=>({role:m.r==='t'?'assistant':'user',content:m.t.replace(/<[^>]+>/g,'')}));
+  try{
+    const res=await fetch(`${API_BASE}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`},body:JSON.stringify({model:AI_MODEL,messages:[{role:'system',content:sys},...hist,{role:'user',content:txt}],max_tokens:170,temperature:.85})});
+    typing.remove();
+    if(!res.ok)throw new Error(res.status);
+    const data=await res.json();
+    addMsg('t',(data.choices?.[0]?.message?.content||'Jambo! Try again! 🌍').replace(/\n/g,'<br>'));
+  }catch(e){typing.remove();addMsg('t','Oops! Connection issue 🌍 But keep learning! Say "Jambo" to me!',false)}
+  btn.disabled=false;inp.focus();
+}
 
-RULES — follow ALL of these:
-- Use VERY simple English only (Grade 1-2 level). Short words. Short sentences.
-- Keep every reply to 2-4 sentences MAXIMUM. Never write long paragraphs.
-- Use fun emojis in every reply 🦁🌍⭐
-- Gently correct English mistakes: show the right sentence after the child's attempt
-- Teach ONE Swahili word per reply when it feels natural (e.g. "In Tanzania we say Asante — it means Thank you!")
-- ALWAYS end with one simple question to keep the child talking
-- Be extremely warm, encouraging, and playful — like a best friend
-- Never use difficult vocabulary. If unsure, use simpler words.`;
+/* ══ TABS ══ */
+function switchTab(n){
+  ['v','q','d','c'].forEach(t=>{
+    const tb=document.getElementById(`tab-${t}`),tc=document.getElementById(`tc-${t}`);
+    if(!tc)return;
+    if(tb)tb.classList.toggle('active',t===n);
+    tc.classList.toggle('active',t===n);
+  });
+  if(n==='c')document.getElementById('cmsgs').scrollTop=9999;
+}
 
-  const history = (state.chatHistory[state.loc] || []).slice(-8).map(m => ({
-    role: m.role === 'simba' ? 'assistant' : 'user',
-    content: m.text.replace(/<[^>]+>/g,'')
-  }));
+/* ══ VICTORY ══ */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');updBadges()}
+function showVictory2(){
+  confetti(5000);
+  const t=totalStars();
+  document.getElementById('vstars').textContent='⭐'.repeat(Math.min(t,25));
+  document.getElementById('vmsg').textContent=`WOW! You collected ${t} stars and learned about ALL of Tanzania with Teacher Tariq! You know Swahili greetings, the flag, pwani coast, beautiful cloth, Tinga Tinga art, and the ngoma drum! ASANTE SANA! 🇹🇿🇹🇼`;
+  showScreen('sv');
+}
 
-  try {
-    const res = await fetch(`${API_BASE}/chat/completions`, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${API_KEY}` },
-      body: JSON.stringify({
-        model: AI_MODEL,
-        messages: [{ role:'system', content:system }, ...history, { role:'user', content:text }],
-        max_tokens: 180, temperature: 0.8
-      })
+/* ══ CONFETTI ══ */
+let cActive=false;
+function confetti(dur=1400){
+  if(cActive)return;cActive=true;
+  const cv=document.getElementById('cc'),ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const cols=['#FFD700','#FF8C00','#1a7a2e','#e040fb','#00b4d8','#ff6e40','#fff'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*cv.width,y:-10,r:Math.random()*7+4,d:Math.random()*7+4,c:cols[Math.floor(Math.random()*cols.length)],t:0,ts:Math.random()*.1+.04}));
+  const end=Date.now()+dur;
+  (function fr(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.t+=p.ts;p.y+=p.d;p.x+=Math.sin(p.t)*.8;if(p.y>cv.height)p.y=-10;ctx.beginPath();ctx.lineWidth=p.r;ctx.strokeStyle=p.c;ctx.moveTo(p.x+Math.sin(p.t)*10+p.r/2,p.y);ctx.lineTo(p.x+Math.sin(p.t)*10,p.y+p.r*1.5);ctx.stroke()});
+  if(Date.now()<end)requestAnimationFrame(fr);else{ctx.clearRect(0,0,cv.width,cv.height);cActive=false}})();
+}
+
+/* ══ SOUND ══ */
+let aCtx;
+function sound(t){
+  try{
+    if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const notes=t==='ok'?[523,659,784]:t==='drum'?[80,60]:t==='no'?[349,294]:[523];
+    notes.forEach((f,i)=>{
+      const o=aCtx.createOscillator(),g=aCtx.createGain();
+      o.connect(g);g.connect(aCtx.destination);
+      o.frequency.value=f;o.type=t==='drum'?'sine':'triangle';
+      g.gain.setValueAtTime(t==='drum'?.45:.22,aCtx.currentTime+i*.11);
+      g.gain.exponentialRampToValueAtTime(.001,aCtx.currentTime+i*.11+(t==='drum'?.4:.25));
+      o.start(aCtx.currentTime+i*.11);o.stop(aCtx.currentTime+i*.11+(t==='drum'?.5:.3));
     });
-    typing.remove();
-    if (!res.ok) throw new Error(res.status);
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'Oops! Try again! 🦁';
-    addMsg('simba', reply.replace(/\n/g,'<br>'));
-  } catch(err) {
-    typing.remove();
-    addMsg('simba', 'Oops! I had trouble connecting. 🦁 But keep practicing! Type one word from today\'s lesson!', false);
-  }
-  btn.disabled = false;
-  inp.focus();
-}
-
-// ── TABS ──────────────────────────────────────────────────────────
-function switchTab(name) {
-  ['vocab','quiz','chat'].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.toggle('active', t===name);
-    document.getElementById(`content-${t}`).classList.toggle('active', t===name);
-  });
-  if (name==='chat') document.getElementById('chat-msgs').scrollTop = 9999;
-}
-
-// ── VICTORY ───────────────────────────────────────────────────────
-function showVictory() {
-  const t = totalStars();
-  document.getElementById('v-stars').textContent = '⭐'.repeat(Math.min(t, 30));
-  document.getElementById('v-msg').textContent =
-    `WOW! You collected ${t} stars and explored the whole world! You learned greetings, Tanzanian animals, Kaohsiung culture, world festivals, and daily life words. Simba is SO proud of you! 🦁🇹🇿🇹🇼`;
-  showScreen('screen-victory');
+  }catch(e){}
 }
 </script>
 </body>
